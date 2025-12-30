@@ -3,60 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LF Parfait | Design Editorial</title>
+    <title>LF PARFAIT | Studio de Photographie Éditoriale</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
     <style>
         :root {
             --accent: #ff0000;
-            --bg: #0d0d0d;
+            --bg: #050505;
         }
         body {
             font-family: 'Inter', sans-serif;
             background-color: var(--bg);
             color: #ffffff;
-            scroll-behavior: smooth;
-            overflow-x: hidden;
             margin: 0;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
         }
         .font-impact {
             font-family: 'Inter', sans-serif;
             font-weight: 900;
             text-transform: uppercase;
-            letter-spacing: -0.05em;
+            letter-spacing: -0.07em;
+            line-height: 0.85;
         }
         .font-serif {
             font-family: 'Playfair Display', serif;
         }
         .reveal {
             opacity: 0;
-            transform: translateY(40px);
-            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            transform: translateY(30px);
+            transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .reveal.active {
             opacity: 1;
             transform: translateY(0);
         }
-        .circle-text {
-            animation: rotate 20s linear infinite;
+        .img-container {
+            overflow: hidden;
+            background: #111;
         }
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+        .img-container img {
+            transition: transform 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+            filter: grayscale(100%);
         }
-        .red-dot {
-            width: 12px;
-            height: 12px;
-            background: var(--accent);
-            border-radius: 50%;
-            display: inline-block;
+        .img-container:hover img {
+            transform: scale(1.05);
+            filter: grayscale(0%);
         }
-        /* Custom scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #111; }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--accent); }
+        
+        .noise {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://grainy-gradients.vercel.app/noise.svg');
+            opacity: 0.05;
+            pointer-events: none;
+            z-index: 999;
+        }
     </style>
     <script type="importmap">
 {
@@ -73,6 +80,7 @@
 </script>
 </head>
 <body>
+    <div class="noise"></div>
     <div id="root"></div>
     <script type="module" src="index.tsx"></script>
 </body>
