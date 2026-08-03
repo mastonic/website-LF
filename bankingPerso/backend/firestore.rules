@@ -1,0 +1,22 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Bridge access tokens: server-only. The Admin SDK (used by Cloud Functions)
+    // bypasses these rules entirely, so this blocks every client-side path.
+    match /bridgeAccounts/{userId} {
+      allow read, write: if false;
+    }
+
+    // Transactions are written exclusively by syncBridgeTransactions. No client
+    // reads/writes until a frontend + auth flow exists. A future step can relax
+    // reads to `request.auth.uid == resource.data.userId`.
+    match /transactions/{transactionId} {
+      allow read, write: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
