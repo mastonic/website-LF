@@ -8,6 +8,11 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Enable Banking session/account info: server-only, same rationale.
+    match /enableBankingSessions/{userId} {
+      allow read, write: if false;
+    }
+
     // Transactions are written exclusively by syncBridgeTransactions. No client
     // reads/writes until a frontend + auth flow exists. A future step can relax
     // reads to `request.auth.uid == resource.data.userId`.

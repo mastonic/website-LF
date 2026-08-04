@@ -8,3 +8,7 @@ backend/.firebase
 firebase-debug.log
 firebase-debug.*.log
 .firebaserc
+
+# Never commit private key material (Enable Banking RSA key, etc.)
+*.pem
+*.key

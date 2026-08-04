@@ -13,13 +13,17 @@
     "shell": "npm run build && firebase functions:shell",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
-    "test:sync-sandbox": "tsx --env-file=.env.local scripts/test-sync-sandbox.ts"
+    "test:sync-sandbox": "tsx --env-file=.env.local scripts/test-sync-sandbox.ts",
+    "bootstrap:enable-banking": "tsx --env-file=.env.local scripts/bootstrap-enable-banking-session.ts",
+    "test:sync-enablebanking": "tsx --env-file=.env.local scripts/test-sync-enablebanking.ts"
   },
   "dependencies": {
     "firebase-admin": "^12.7.0",
-    "firebase-functions": "^5.1.1"
+    "firebase-functions": "^5.1.1",
+    "jsonwebtoken": "^9.0.3"
   },
   "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^22.14.0",
     "firebase-tools": "^15.25.1",
     "tsx": "^4.19.2",

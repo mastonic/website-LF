@@ -8,4 +8,5 @@ if (getApps().length === 0) {
 export const db = getFirestore();
 
 export const BRIDGE_ACCOUNTS_COLLECTION = 'bridgeAccounts';
+export const ENABLE_BANKING_SESSIONS_COLLECTION = 'enableBankingSessions';
 export const TRANSACTIONS_COLLECTION = 'transactions';
