@@ -5,7 +5,7 @@
 //      populated — run scripts/bootstrap-enable-banking-session.ts once first
 //   3. I_UNDERSTAND_THIS_CALLS_PRODUCTION=yes set in .env.local, as an explicit
 //      confirmation gate before this script will touch the real API.
-import { listAccounts } from '../src/lib/enable-banking-client';
+import { assertPrivateKeyExists, listAccounts } from '../src/lib/enable-banking-client';
 import { syncEnableBankingTransactionsForUser } from '../src/functions/sync-enable-banking-transactions';
 import { db, ENABLE_BANKING_SESSIONS_COLLECTION, TRANSACTIONS_COLLECTION } from '../src/lib/firestore-admin';
 
@@ -24,6 +24,11 @@ async function main() {
         'this is intended, to avoid burning through any restricted-production or ASPSP-side throttling.',
     );
   }
+
+  // Checked right after the production-confirmation gate, before touching
+  // Firestore or the network, so a missing .pem always produces this
+  // specific message rather than a cryptic failure deep inside JWT signing.
+  assertPrivateKeyExists();
 
   console.log(`[1/3] Loading Enable Banking session for "${USER_ID}"...`);
   const sessionSnap = await db.collection(ENABLE_BANKING_SESSIONS_COLLECTION).doc(USER_ID).get();

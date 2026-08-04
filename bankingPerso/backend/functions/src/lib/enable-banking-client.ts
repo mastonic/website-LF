@@ -1,4 +1,4 @@
-import { readFileSync } from 'fs';
+import { existsSync, readFileSync } from 'fs';
 import path from 'path';
 import { randomUUID } from 'crypto';
 import { setTimeout as sleep } from 'timers/promises';
@@ -30,9 +30,27 @@ function requireEnv(name: string): string {
 
 let cachedPrivateKey: string | null = null;
 
+/**
+ * Checks the private key file exists, without reading it, for scripts that
+ * want to fail fast with a clear message before doing anything else (env
+ * validation, prompting the user, etc.) rather than surfacing this deep
+ * inside a JWT-signing call.
+ */
+export function assertPrivateKeyExists(): void {
+  const keyPath = requireEnv('ENABLE_BANKING_PRIVATE_KEY_PATH');
+  const resolved = path.resolve(process.cwd(), keyPath);
+  if (!existsSync(resolved)) {
+    throw new Error(
+      `Enable Banking private key not found at "${keyPath}" (resolved: "${resolved}"). ` +
+        'Place the .pem file there — see bankingPerso/backend/functions/keys/README.md.',
+    );
+  }
+}
+
 /** Reads the RSA private key from disk. Never logs its path's contents or any error text that could echo key material. */
 function loadPrivateKey(): string {
   if (cachedPrivateKey) return cachedPrivateKey;
+  assertPrivateKeyExists();
   const keyPath = requireEnv('ENABLE_BANKING_PRIVATE_KEY_PATH');
   const resolved = path.resolve(process.cwd(), keyPath);
   try {
@@ -40,7 +58,7 @@ function loadPrivateKey(): string {
   } catch {
     throw new Error(
       `Could not read the Enable Banking private key at "${keyPath}" (resolved: "${resolved}"). ` +
-        'Place the .pem file there and check ENABLE_BANKING_PRIVATE_KEY_PATH.',
+        'Check its file permissions and that it is a valid PEM file.',
     );
   }
   return cachedPrivateKey;

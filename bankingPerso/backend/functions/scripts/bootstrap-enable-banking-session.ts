@@ -15,7 +15,7 @@
 // the same concern; this script doesn't gate on it because *you* are the one
 // invoking it interactively, on purpose, to link your own account.
 import readline from 'readline/promises';
-import { createSession, startAuthorization } from '../src/lib/enable-banking-client';
+import { assertPrivateKeyExists, createSession, startAuthorization } from '../src/lib/enable-banking-client';
 import { db, ENABLE_BANKING_SESSIONS_COLLECTION } from '../src/lib/firestore-admin';
 
 const USER_ID = process.env.ENABLE_BANKING_TARGET_USER_ID ?? 'me';
@@ -28,6 +28,11 @@ function requireEnv(name: string): string {
 }
 
 async function main() {
+  // Checked first, and separately from the other env vars below, so a
+  // missing .pem always produces this specific message rather than a
+  // generic "missing env var" or a cryptic failure deep inside JWT signing.
+  assertPrivateKeyExists();
+
   const aspspName = requireEnv('ENABLE_BANKING_ASPSP_NAME');
   const aspspCountry = requireEnv('ENABLE_BANKING_ASPSP_COUNTRY');
   const redirectUrl = requireEnv('ENABLE_BANKING_REDIRECT_URL');

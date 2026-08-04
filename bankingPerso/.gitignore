@@ -12,3 +12,10 @@ firebase-debug.*.log
 # Never commit private key material (Enable Banking RSA key, etc.)
 *.pem
 *.key
+
+# Belt-and-suspenders: ignore everything in keys/ except the placeholder
+# files that document the directory in git (the *.pem rule above already
+# covers the actual key, but this also catches any other file dropped here).
+backend/functions/keys/*
+!backend/functions/keys/.gitkeep
+!backend/functions/keys/README.md
