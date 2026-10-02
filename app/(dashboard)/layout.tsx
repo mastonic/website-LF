@@ -17,9 +17,10 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   if (!member) redirect('/login')
 
+  // N'expose pas api_key dans le layout (chargée seulement dans /leads et /parametres)
   const { data: workspace } = await supabase
     .from('workspaces')
-    .select('*')
+    .select('id, name, slug, plan, plan_expires_at, logo_url, brand_color, ai_quota_used, ai_quota_limit, created_at, updated_at')
     .eq('id', member.workspace_id)
     .single()
 

@@ -102,14 +102,23 @@ export interface Contact {
   updated_at: string
 }
 
+export interface DonneesInvestissement {
+  loyer_mensuel?: number
+  charges_copro?: number
+  rendement_brut?: number
+  regime_fiscal?: string
+}
+
 export interface AnnonceGenerateInput {
   type_bien: string
   surface?: number
   pieces?: number
   localisation?: string
+  prix?: number
   equipements?: string[]
   points_forts?: string
   ton: AnnonceTon
+  donnees_investissement?: DonneesInvestissement
 }
 
 export interface AnnonceGenerateOutput {

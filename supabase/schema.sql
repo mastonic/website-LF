@@ -48,9 +48,11 @@ create table public.annonces (
   surface         numeric,
   pieces          integer,
   localisation    text,
+  prix            numeric,
   equipements     text[],
   points_forts    text,
   ton             text not null default 'standard' check (ton in ('standard','luxe','familial','investisseur')),
+  reference_mandat text,
   titre           text,
   description_longue   text,
   description_courte   text,
@@ -276,3 +278,38 @@ $$;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute function public.handle_new_user();
+
+-- ============================================================
+-- RPC : incrément atomique du quota IA
+-- Retourne TRUE si OK, FALSE si quota dépassé
+-- ============================================================
+create or replace function public.increment_ai_quota(workspace_id_input uuid)
+returns boolean language plpgsql security definer as $$
+declare
+  updated_rows integer;
+begin
+  update public.workspaces
+  set ai_quota_used = ai_quota_used + 1
+  where id = workspace_id_input
+    and ai_quota_used < ai_quota_limit;
+
+  get diagnostics updated_rows = row_count;
+  return updated_rows > 0;
+end;
+$$;
+
+-- ============================================================
+-- RPC : vérification de l'expiration du plan trial
+-- ============================================================
+create or replace function public.is_plan_active(workspace_id_input uuid)
+returns boolean language sql security definer stable as $$
+  select exists (
+    select 1 from public.workspaces
+    where id = workspace_id_input
+      and (
+        plan != 'trial'
+        or plan_expires_at is null
+        or plan_expires_at > now()
+      )
+  );
+$$;
