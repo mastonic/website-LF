@@ -1,6 +1,18 @@
 -- ============================================================
 -- BRAND IDENTITY (Module studio visuel — étape 3.1)
 -- ============================================================
+
+-- Fonction updated_at générique (idempotente)
+create or replace function public.handle_updated_at()
+returns trigger
+language plpgsql
+as $$
+begin
+  new.updated_at = now();
+  return new;
+end;
+$$;
+
 create table public.brand_identity (
   id                uuid primary key default uuid_generate_v4(),
   workspace_id      uuid unique not null references public.workspaces(id) on delete cascade,
