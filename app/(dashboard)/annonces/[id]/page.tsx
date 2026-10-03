@@ -1,12 +1,13 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Globe, Archive, RotateCcw } from 'lucide-react'
+import { ArrowLeft, Globe, Archive, RotateCcw, ImageIcon } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { revalidatePath } from 'next/cache'
 import { formatDate } from '@/lib/utils'
 import CopyButton from '@/components/CopyButton'
-import type { Annonce } from '@/types'
+import PhotoUploader from '@/components/PhotoUploader'
+import type { Annonce, Plan } from '@/types'
 
 export const metadata = { title: 'Détail annonce' }
 
@@ -15,6 +16,13 @@ const STATUT_COLORS: Record<string, string> = {
   brouillon: 'bg-gray-100 text-gray-600',
   publie: 'bg-green-100 text-green-700',
   archive: 'bg-orange-100 text-orange-700',
+}
+
+const PHOTO_LIMITS: Record<Plan, number> = {
+  trial: 4,
+  starter: 4,
+  pro: 20,
+  agence: 99,
 }
 
 // ── Server Action : changer le statut ────────────────────────────────────────
@@ -30,6 +38,25 @@ async function changeStatut(annonceId: string, workspaceId: string, statut: stri
   revalidatePath('/annonces')
 }
 
+function formatForPortal(portal: string, titre: string | null, desc: string | null): string {
+  if (!titre && !desc) return ''
+  const t = titre ?? ''
+  const d = desc ?? ''
+
+  switch (portal) {
+    case 'seloger':
+      return `${t.slice(0, 130)}\n\n${d.slice(0, 3000)}`
+    case 'leboncoin':
+      return `${t.slice(0, 60)}\n\n${d.slice(0, 4000)}`
+    case 'pap':
+      return `${t}\n\n${d.slice(0, 2000)}`
+    case 'bienici':
+      return `${t}\n\n${d.slice(0, 5000)}`
+    default:
+      return `${t}\n\n${d}`
+  }
+}
+
 export default async function AnnonceDetailPage({ params }: { params: { id: string } }) {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -38,26 +65,42 @@ export default async function AnnonceDetailPage({ params }: { params: { id: stri
   const { data: member } = await supabase.from('workspace_members').select('workspace_id').eq('user_id', user.id).single()
   if (!member) redirect('/login')
 
-  const { data: annonce, error } = await supabase
-    .from('annonces')
-    .select('*')
-    .eq('id', params.id)
-    .eq('workspace_id', member.workspace_id)
-    .single()
+  const [{ data: annonce, error }, { data: workspace }] = await Promise.all([
+    supabase
+      .from('annonces')
+      .select('*')
+      .eq('id', params.id)
+      .eq('workspace_id', member.workspace_id)
+      .single(),
+    supabase
+      .from('workspaces')
+      .select('plan')
+      .eq('id', member.workspace_id)
+      .single(),
+  ])
 
   if (error || !annonce) notFound()
 
   const a = annonce as Annonce
+  const plan = (workspace?.plan ?? 'trial') as Plan
   const workspaceId = member.workspace_id
+  const photoLimit = PHOTO_LIMITS[plan]
 
   const publishAction = changeStatut.bind(null, a.id, workspaceId, 'publie')
   const archiveAction = changeStatut.bind(null, a.id, workspaceId, 'archive')
   const brouillonAction = changeStatut.bind(null, a.id, workspaceId, 'brouillon')
 
-  const sections = [
+  const textSections = [
     { label: 'Description complète (SEO)', content: a.description_longue },
     { label: 'Version réseaux sociaux', content: a.description_courte },
     { label: 'Version anglaise', content: a.description_en },
+  ]
+
+  const portals = [
+    { key: 'seloger', label: 'SeLoger', color: 'bg-orange-100 text-orange-800 hover:bg-orange-200', info: 'Titre 130 car. · Desc 3 000 car.' },
+    { key: 'leboncoin', label: 'Leboncoin', color: 'bg-red-100 text-red-800 hover:bg-red-200', info: 'Titre 60 car. · Desc 4 000 car.' },
+    { key: 'pap', label: 'PAP.fr', color: 'bg-blue-100 text-blue-800 hover:bg-blue-200', info: 'Titre libre · Desc 2 000 car.' },
+    { key: 'bienici', label: 'Bien ici', color: 'bg-green-100 text-green-800 hover:bg-green-200', info: 'Titre libre · Desc 5 000 car.' },
   ]
 
   return (
@@ -79,10 +122,7 @@ export default async function AnnonceDetailPage({ params }: { params: { id: stri
         <div className="flex gap-2 flex-shrink-0">
           {a.statut !== 'publie' && (
             <form action={publishAction}>
-              <button
-                type="submit"
-                className="flex items-center gap-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-medium px-3 py-2 rounded-lg transition-colors"
-              >
+              <button type="submit" className="flex items-center gap-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-medium px-3 py-2 rounded-lg transition-colors">
                 <Globe className="h-3.5 w-3.5" />
                 Publier
               </button>
@@ -90,10 +130,7 @@ export default async function AnnonceDetailPage({ params }: { params: { id: stri
           )}
           {a.statut === 'publie' && (
             <form action={archiveAction}>
-              <button
-                type="submit"
-                className="flex items-center gap-1.5 bg-orange-500 hover:bg-orange-600 text-white text-xs font-medium px-3 py-2 rounded-lg transition-colors"
-              >
+              <button type="submit" className="flex items-center gap-1.5 bg-orange-500 hover:bg-orange-600 text-white text-xs font-medium px-3 py-2 rounded-lg transition-colors">
                 <Archive className="h-3.5 w-3.5" />
                 Archiver
               </button>
@@ -101,10 +138,7 @@ export default async function AnnonceDetailPage({ params }: { params: { id: stri
           )}
           {a.statut === 'archive' && (
             <form action={brouillonAction}>
-              <button
-                type="submit"
-                className="flex items-center gap-1.5 bg-gray-500 hover:bg-gray-600 text-white text-xs font-medium px-3 py-2 rounded-lg transition-colors"
-              >
+              <button type="submit" className="flex items-center gap-1.5 bg-gray-500 hover:bg-gray-600 text-white text-xs font-medium px-3 py-2 rounded-lg transition-colors">
                 <RotateCcw className="h-3.5 w-3.5" />
                 Remettre en brouillon
               </button>
@@ -120,6 +154,8 @@ export default async function AnnonceDetailPage({ params }: { params: { id: stri
           { label: 'Surface', value: a.surface ? `${a.surface} m²` : '—' },
           { label: 'Pièces', value: a.pieces?.toString() ?? '—' },
           { label: 'Localisation', value: a.localisation ?? '—' },
+          ...(a.prix ? [{ label: 'Prix', value: `${a.prix.toLocaleString('fr-FR')} €` }] : []),
+          ...(a.reference_mandat ? [{ label: 'Réf. mandat', value: a.reference_mandat }] : []),
         ].map(item => (
           <div key={item.label} className="bg-gray-50 rounded-lg p-3">
             <p className="text-xs text-gray-500">{item.label}</p>
@@ -127,6 +163,26 @@ export default async function AnnonceDetailPage({ params }: { params: { id: stri
           </div>
         ))}
       </div>
+
+      {/* Photos */}
+      <Card className="mb-6">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-sm font-semibold text-gray-500 uppercase tracking-wide flex items-center gap-2">
+            <ImageIcon className="h-4 w-4" />
+            Photos du bien
+            <span className="ml-auto text-xs font-normal text-gray-400 normal-case tracking-normal">
+              {(a.photos ?? []).length}/{photoLimit} photos · plan {plan}
+            </span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="pt-0">
+          <PhotoUploader
+            annonceId={a.id}
+            initialPhotos={a.photos ?? []}
+            photoLimit={photoLimit}
+          />
+        </CardContent>
+      </Card>
 
       {/* Titre */}
       {a.titre && (
@@ -144,8 +200,8 @@ export default async function AnnonceDetailPage({ params }: { params: { id: stri
       )}
 
       {/* Sections de texte */}
-      <div className="space-y-6">
-        {sections.filter(s => s.content).map(s => (
+      <div className="space-y-6 mb-8">
+        {textSections.filter(s => s.content).map(s => (
           <Card key={s.label}>
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-semibold text-gray-500 uppercase tracking-wide flex items-center justify-between">
@@ -159,6 +215,36 @@ export default async function AnnonceDetailPage({ params }: { params: { id: stri
           </Card>
         ))}
       </div>
+
+      {/* Diffusion portails */}
+      {(a.titre || a.description_longue) && (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-semibold text-gray-500 uppercase tracking-wide">
+              Diffuser sur les portails
+            </CardTitle>
+            <p className="text-xs text-gray-400 mt-1">
+              Copiez le texte formaté pour chaque portail, puis collez-le directement dans leur interface de dépôt d&apos;annonce.
+            </p>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {portals.map(p => {
+                const text = formatForPortal(p.key, a.titre, a.description_longue)
+                return (
+                  <div key={p.key} className="border border-gray-100 rounded-xl p-4 flex items-center justify-between gap-4">
+                    <div>
+                      <p className="text-sm font-semibold text-gray-800">{p.label}</p>
+                      <p className="text-xs text-gray-400 mt-0.5">{p.info}</p>
+                    </div>
+                    <CopyButton text={text} label="Copier" />
+                  </div>
+                )
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   )
 }
