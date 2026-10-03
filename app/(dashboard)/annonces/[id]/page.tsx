@@ -25,7 +25,6 @@ const PHOTO_LIMITS: Record<Plan, number> = {
   agence: 99,
 }
 
-// ── Server Action : changer le statut ────────────────────────────────────────
 async function changeStatut(annonceId: string, workspaceId: string, statut: string) {
   'use server'
   const supabase = createClient()
@@ -42,18 +41,12 @@ function formatForPortal(portal: string, titre: string | null, desc: string | nu
   if (!titre && !desc) return ''
   const t = titre ?? ''
   const d = desc ?? ''
-
   switch (portal) {
-    case 'seloger':
-      return `${t.slice(0, 130)}\n\n${d.slice(0, 3000)}`
-    case 'leboncoin':
-      return `${t.slice(0, 60)}\n\n${d.slice(0, 4000)}`
-    case 'pap':
-      return `${t}\n\n${d.slice(0, 2000)}`
-    case 'bienici':
-      return `${t}\n\n${d.slice(0, 5000)}`
-    default:
-      return `${t}\n\n${d}`
+    case 'seloger': return `${t.slice(0, 130)}\n\n${d.slice(0, 3000)}`
+    case 'leboncoin': return `${t.slice(0, 60)}\n\n${d.slice(0, 4000)}`
+    case 'pap': return `${t}\n\n${d.slice(0, 2000)}`
+    case 'bienici': return `${t}\n\n${d.slice(0, 5000)}`
+    default: return `${t}\n\n${d}`
   }
 }
 
@@ -66,17 +59,8 @@ export default async function AnnonceDetailPage({ params }: { params: { id: stri
   if (!member) redirect('/login')
 
   const [{ data: annonce, error }, { data: workspace }] = await Promise.all([
-    supabase
-      .from('annonces')
-      .select('*')
-      .eq('id', params.id)
-      .eq('workspace_id', member.workspace_id)
-      .single(),
-    supabase
-      .from('workspaces')
-      .select('plan')
-      .eq('id', member.workspace_id)
-      .single(),
+    supabase.from('annonces').select('*').eq('id', params.id).eq('workspace_id', member.workspace_id).single(),
+    supabase.from('workspaces').select('plan').eq('id', member.workspace_id).single(),
   ])
 
   if (error || !annonce) notFound()
@@ -97,10 +81,10 @@ export default async function AnnonceDetailPage({ params }: { params: { id: stri
   ]
 
   const portals = [
-    { key: 'seloger', label: 'SeLoger', color: 'bg-orange-100 text-orange-800 hover:bg-orange-200', info: 'Titre 130 car. · Desc 3 000 car.' },
-    { key: 'leboncoin', label: 'Leboncoin', color: 'bg-red-100 text-red-800 hover:bg-red-200', info: 'Titre 60 car. · Desc 4 000 car.' },
-    { key: 'pap', label: 'PAP.fr', color: 'bg-blue-100 text-blue-800 hover:bg-blue-200', info: 'Titre libre · Desc 2 000 car.' },
-    { key: 'bienici', label: 'Bien ici', color: 'bg-green-100 text-green-800 hover:bg-green-200', info: 'Titre libre · Desc 5 000 car.' },
+    { key: 'seloger', label: 'SeLoger', info: 'Titre 130 car. · Desc 3 000 car.' },
+    { key: 'leboncoin', label: 'Leboncoin', info: 'Titre 60 car. · Desc 4 000 car.' },
+    { key: 'pap', label: 'PAP.fr', info: 'Titre libre · Desc 2 000 car.' },
+    { key: 'bienici', label: 'Bien ici', info: 'Titre libre · Desc 5 000 car.' },
   ]
 
   return (
@@ -118,7 +102,6 @@ export default async function AnnonceDetailPage({ params }: { params: { id: stri
           </div>
         </div>
 
-        {/* ── Actions de statut ── */}
         <div className="flex gap-2 flex-shrink-0">
           {a.statut !== 'publie' && (
             <form action={publishAction}>
@@ -171,16 +154,12 @@ export default async function AnnonceDetailPage({ params }: { params: { id: stri
             <ImageIcon className="h-4 w-4" />
             Photos du bien
             <span className="ml-auto text-xs font-normal text-gray-400 normal-case tracking-normal">
-              {(a.photos ?? []).length}/{photoLimit} photos · plan {plan}
+              {(a.photos ?? []).length}/{photoLimit} · plan {plan}
             </span>
           </CardTitle>
         </CardHeader>
         <CardContent className="pt-0">
-          <PhotoUploader
-            annonceId={a.id}
-            initialPhotos={a.photos ?? []}
-            photoLimit={photoLimit}
-          />
+          <PhotoUploader annonceId={a.id} initialPhotos={a.photos ?? []} photoLimit={photoLimit} />
         </CardContent>
       </Card>
 
@@ -224,23 +203,20 @@ export default async function AnnonceDetailPage({ params }: { params: { id: stri
               Diffuser sur les portails
             </CardTitle>
             <p className="text-xs text-gray-400 mt-1">
-              Copiez le texte formaté pour chaque portail, puis collez-le directement dans leur interface de dépôt d&apos;annonce.
+              Copiez le texte formaté pour chaque portail, puis collez-le dans leur interface de dépôt d&apos;annonce.
             </p>
           </CardHeader>
           <CardContent className="pt-0">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {portals.map(p => {
-                const text = formatForPortal(p.key, a.titre, a.description_longue)
-                return (
-                  <div key={p.key} className="border border-gray-100 rounded-xl p-4 flex items-center justify-between gap-4">
-                    <div>
-                      <p className="text-sm font-semibold text-gray-800">{p.label}</p>
-                      <p className="text-xs text-gray-400 mt-0.5">{p.info}</p>
-                    </div>
-                    <CopyButton text={text} label="Copier" />
+              {portals.map(p => (
+                <div key={p.key} className="border border-gray-100 rounded-xl p-4 flex items-center justify-between gap-4">
+                  <div>
+                    <p className="text-sm font-semibold text-gray-800">{p.label}</p>
+                    <p className="text-xs text-gray-400 mt-0.5">{p.info}</p>
                   </div>
-                )
-              })}
+                  <CopyButton text={formatForPortal(p.key, a.titre, a.description_longue)} label="Copier" />
+                </div>
+              ))}
             </div>
           </CardContent>
         </Card>
