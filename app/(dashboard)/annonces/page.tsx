@@ -19,6 +19,7 @@ export default async function AnnoncesPage() {
     .select('workspace_id')
     .eq('user_id', user.id)
     .single()
+  if (!member) redirect('/login')
 
   const { data: annonces } = await supabase
     .from('annonces')

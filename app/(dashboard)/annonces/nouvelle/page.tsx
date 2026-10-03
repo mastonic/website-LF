@@ -87,6 +87,8 @@ export default function NouvelleAnnoncePage() {
   const [selectedEquipements, setSelectedEquipements] = useState<string[]>([])
   const [result, setResult] = useState<AnnonceGenerateOutput | null>(null)
   const [editedResult, setEditedResult] = useState<AnnonceGenerateOutput | null>(null)
+  const [annonceId, setAnnonceId] = useState<string | null>(null)
+  const [saving, setSaving] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
@@ -135,6 +137,7 @@ export default function NouvelleAnnoncePage() {
       if (!res.ok) throw new Error(data.error ?? 'Erreur génération')
       setResult(data.data)
       setEditedResult(data.data)
+      if (data.annonce_id) setAnnonceId(data.annonce_id)
       showToast('Annonce générée et sauvegardée !', 'success')
     } catch (e) {
       const msg = e instanceof Error ? e.message : 'Erreur inconnue'
@@ -148,6 +151,30 @@ export default function NouvelleAnnoncePage() {
 
   function updateEdited(field: keyof AnnonceGenerateOutput, value: string) {
     setEditedResult(prev => prev ? { ...prev, [field]: value } : null)
+  }
+
+  async function handleSave() {
+    if (!editedResult || !annonceId) return
+    setSaving(true)
+    try {
+      const res = await fetch('/api/annonces/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          annonce_id: annonceId,
+          type_bien: form.type_bien || 'appartement',
+          ton: form.ton,
+          ...editedResult,
+        }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error ?? 'Erreur sauvegarde')
+      showToast('Modifications sauvegardées !', 'success')
+    } catch (e) {
+      showToast(e instanceof Error ? e.message : 'Erreur', 'error')
+    } finally {
+      setSaving(false)
+    }
   }
 
   const current = editedResult ?? result
@@ -367,9 +394,16 @@ export default function NouvelleAnnoncePage() {
                 </CardContent>
               </Card>
 
-              <Button onClick={handleGenerate} variant="outline" className="w-full">
-                <Wand2 className="h-4 w-4 mr-2" /> Régénérer
-              </Button>
+              <div className="flex gap-2">
+                {annonceId && (
+                  <Button onClick={handleSave} disabled={saving} variant="outline" className="flex-1 border-green-300 text-green-700 hover:bg-green-50">
+                    {saving ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Sauvegarde...</> : <><Check className="h-4 w-4 mr-2" />Sauvegarder</>}
+                  </Button>
+                )}
+                <Button onClick={handleGenerate} variant="outline" className="flex-1">
+                  <Wand2 className="h-4 w-4 mr-2" /> Régénérer
+                </Button>
+              </div>
             </div>
           )}
         </div>
