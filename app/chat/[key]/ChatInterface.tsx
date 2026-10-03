@@ -64,9 +64,11 @@ export default function ChatInterface({
       const data = await res.json()
       if (data.message) {
         setMessages([{ role: 'assistant', content: data.message }])
+      } else {
+        setMessages([{ role: 'assistant', content: `Bonjour ! Je suis l'assistant de ${agencyName}. Comment puis-je vous aider ?` }])
       }
     } catch {
-      setMessages([{ role: 'assistant', content: 'Bonjour ! Comment puis-je vous aider ?' }])
+      setMessages([{ role: 'assistant', content: `Bonjour ! Je suis l'assistant de ${agencyName}. Comment puis-je vous aider ?` }])
     } finally {
       setLoading(false)
       setTimeout(() => inputRef.current?.focus(), 100)
@@ -92,11 +94,13 @@ export default function ChatInterface({
         body: JSON.stringify({ messages: next, session_id: sessionId }),
       })
       const data = await res.json()
-      if (data.message) {
+      if (!res.ok || data.error || !data.message) {
+        setMessages([...next, { role: 'assistant', content: 'Désolé, une erreur est survenue. Réessayez dans quelques instants.' }])
+      } else {
         setMessages([...next, { role: 'assistant', content: data.message }])
       }
     } catch {
-      setMessages([...next, { role: 'assistant', content: 'Désolé, une erreur est survenue. Réessayez.' }])
+      setMessages([...next, { role: 'assistant', content: 'Désolé, une erreur est survenue. Réessayez dans quelques instants.' }])
     } finally {
       setLoading(false)
       setTimeout(() => inputRef.current?.focus(), 50)

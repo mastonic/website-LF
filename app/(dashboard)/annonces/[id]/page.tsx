@@ -1,19 +1,33 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Copy } from 'lucide-react'
+import { ArrowLeft, Globe, Archive, RotateCcw } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
+import { revalidatePath } from 'next/cache'
 import { formatDate } from '@/lib/utils'
+import CopyButton from '@/components/CopyButton'
 import type { Annonce } from '@/types'
 
 export const metadata = { title: 'Détail annonce' }
 
 const TON_LABELS = { standard: 'Standard', luxe: 'Luxe', familial: 'Familial', investisseur: 'Investisseur' }
-const STATUT_COLORS = {
+const STATUT_COLORS: Record<string, string> = {
   brouillon: 'bg-gray-100 text-gray-600',
   publie: 'bg-green-100 text-green-700',
   archive: 'bg-orange-100 text-orange-700',
+}
+
+// ── Server Action : changer le statut ────────────────────────────────────────
+async function changeStatut(annonceId: string, workspaceId: string, statut: string) {
+  'use server'
+  const supabase = createClient()
+  await supabase
+    .from('annonces')
+    .update({ statut })
+    .eq('id', annonceId)
+    .eq('workspace_id', workspaceId)
+  revalidatePath(`/annonces/${annonceId}`)
+  revalidatePath('/annonces')
 }
 
 export default async function AnnonceDetailPage({ params }: { params: { id: string } }) {
@@ -34,6 +48,11 @@ export default async function AnnonceDetailPage({ params }: { params: { id: stri
   if (error || !annonce) notFound()
 
   const a = annonce as Annonce
+  const workspaceId = member.workspace_id
+
+  const publishAction = changeStatut.bind(null, a.id, workspaceId, 'publie')
+  const archiveAction = changeStatut.bind(null, a.id, workspaceId, 'archive')
+  const brouillonAction = changeStatut.bind(null, a.id, workspaceId, 'brouillon')
 
   const sections = [
     { label: 'Description complète (SEO)', content: a.description_longue },
@@ -54,6 +73,43 @@ export default async function AnnonceDetailPage({ params }: { params: { id: stri
             <span className="text-xs bg-blue-100 text-blue-700 px-2.5 py-0.5 rounded-full font-medium">{TON_LABELS[a.ton]}</span>
             <span className="text-xs text-gray-400">{formatDate(a.created_at)}</span>
           </div>
+        </div>
+
+        {/* ── Actions de statut ── */}
+        <div className="flex gap-2 flex-shrink-0">
+          {a.statut !== 'publie' && (
+            <form action={publishAction}>
+              <button
+                type="submit"
+                className="flex items-center gap-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-medium px-3 py-2 rounded-lg transition-colors"
+              >
+                <Globe className="h-3.5 w-3.5" />
+                Publier
+              </button>
+            </form>
+          )}
+          {a.statut === 'publie' && (
+            <form action={archiveAction}>
+              <button
+                type="submit"
+                className="flex items-center gap-1.5 bg-orange-500 hover:bg-orange-600 text-white text-xs font-medium px-3 py-2 rounded-lg transition-colors"
+              >
+                <Archive className="h-3.5 w-3.5" />
+                Archiver
+              </button>
+            </form>
+          )}
+          {a.statut === 'archive' && (
+            <form action={brouillonAction}>
+              <button
+                type="submit"
+                className="flex items-center gap-1.5 bg-gray-500 hover:bg-gray-600 text-white text-xs font-medium px-3 py-2 rounded-lg transition-colors"
+              >
+                <RotateCcw className="h-3.5 w-3.5" />
+                Remettre en brouillon
+              </button>
+            </form>
+          )}
         </div>
       </div>
 
@@ -78,7 +134,7 @@ export default async function AnnonceDetailPage({ params }: { params: { id: stri
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-semibold text-gray-500 uppercase tracking-wide flex items-center justify-between">
               Titre
-              <CopyButtonClient text={a.titre} />
+              <CopyButton text={a.titre} />
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-0">
@@ -94,7 +150,7 @@ export default async function AnnonceDetailPage({ params }: { params: { id: stri
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-semibold text-gray-500 uppercase tracking-wide flex items-center justify-between">
                 {s.label}
-                <CopyButtonClient text={s.content!} />
+                <CopyButton text={s.content!} />
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-0">
@@ -104,19 +160,5 @@ export default async function AnnonceDetailPage({ params }: { params: { id: stri
         ))}
       </div>
     </div>
-  )
-}
-
-// Composant client pour le bouton copier
-function CopyButtonClient({ text }: { text: string }) {
-  return (
-    <a
-      href={`data:text/plain,${encodeURIComponent(text)}`}
-      download="annonce.txt"
-      className="text-gray-400 hover:text-gray-600 transition-colors"
-      title="Télécharger"
-    >
-      <Copy className="h-4 w-4" />
-    </a>
   )
 }

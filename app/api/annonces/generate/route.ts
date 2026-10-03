@@ -55,7 +55,7 @@ export async function POST(request: Request) {
         .eq('id', annonce_id)
         .eq('workspace_id', workspaceId)
     } else {
-      await supabase.from('annonces').insert({
+      const { data: inserted } = await supabase.from('annonces').insert({
         workspace_id: workspaceId,
         created_by: user.id,
         type_bien: input.type_bien,
@@ -71,7 +71,8 @@ export async function POST(request: Request) {
         description_courte: result.description_courte,
         description_en: result.description_en,
         tokens_used: result.tokens_used,
-      })
+      }).select('id').single()
+      return NextResponse.json({ success: true, data: result, annonce_id: inserted?.id ?? null })
     }
 
     return NextResponse.json({ success: true, data: result })
