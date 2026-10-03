@@ -10,19 +10,57 @@ const MODEL = 'claude-sonnet-4-6'
 const MAX_MESSAGES = 20
 const MAX_MESSAGE_LENGTH = 500
 
-const SYSTEM_PROMPT = `Tu es un assistant immobilier virtuel friendly et professionnel.
-Tu qualifies les visiteurs qui s'intéressent à des biens immobiliers.
-Tu dois collecter naturellement dans la conversation :
-1. Le type de bien recherché (appartement, maison, etc.)
-2. La localisation souhaitée
-3. Le budget (fourchette)
-4. Le délai du projet (urgent, 3 mois, 6 mois, plus d'un an)
-5. Les coordonnées (prénom, nom, email ou téléphone)
+const BASE_SYSTEM_PROMPT = `Tu es un assistant immobilier virtuel friendly et professionnel pour l'agence {AGENCY_NAME}.
+Tu aides les visiteurs à trouver un bien et tu qualifies leur projet.
 
-Sois naturel et chaleureux. Pose une question à la fois.
-Ne demande pas toutes les informations d'un coup.
-Réponds en français sauf si l'utilisateur écrit dans une autre langue.
-Quand tu as collecté suffisamment d'informations, conclus en proposant un rendez-vous.`
+{LISTINGS_SECTION}
+
+Tes objectifs dans la conversation :
+1. Comprendre ce que cherche le visiteur (type de bien, localisation, budget, délai)
+2. Si un bien du catalogue correspond, le mentionner naturellement avec ses caractéristiques réelles
+3. Collecter les coordonnées (prénom, nom, email ou téléphone) pour qu'un agent rappelle
+
+Règles importantes :
+- Pose une seule question à la fois, sois naturel et chaleureux
+- Ne mentionne que des biens qui existent dans le catalogue ci-dessus
+- Si aucun bien ne correspond exactement, propose de chercher d'autres options et collecte les critères
+- Réponds en français sauf si l'utilisateur écrit dans une autre langue
+- Quand tu as les coordonnées, conclus en proposant un rendez-vous ou un rappel`
+
+interface Annonce {
+  id: string
+  titre: string | null
+  type_bien: string
+  surface: number | null
+  pieces: number | null
+  localisation: string | null
+  prix: number | null
+  equipements: string[] | null
+  description_courte: string | null
+  reference_mandat: string | null
+}
+
+function formatListingsForPrompt(annonces: Annonce[]): string {
+  if (annonces.length === 0) {
+    return 'CATALOGUE : Aucun bien actuellement publié. Collecte les critères du visiteur pour lui proposer une recherche personnalisée.'
+  }
+
+  const lines = annonces.map((a, i) => {
+    const parts = [
+      `${i + 1}. ${a.titre ?? a.type_bien}`,
+      a.type_bien,
+      a.surface ? `${a.surface} m²` : null,
+      a.pieces ? `${a.pieces} pièce${a.pieces > 1 ? 's' : ''}` : null,
+      a.localisation ?? null,
+      a.prix ? `${a.prix.toLocaleString('fr-FR')} €` : null,
+      a.equipements?.length ? a.equipements.slice(0, 4).join(', ') : null,
+      a.reference_mandat ? `réf. ${a.reference_mandat}` : null,
+    ].filter(Boolean)
+    return `  ${parts.join(' | ')}`
+  })
+
+  return `CATALOGUE DES BIENS DISPONIBLES (${annonces.length} bien${annonces.length > 1 ? 's' : ''}) :\n${lines.join('\n')}\n\nUtilise uniquement ces biens quand tu réponds aux questions sur les disponibilités.`
+}
 
 export async function POST(request: Request) {
   try {
@@ -69,11 +107,25 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Clé API invalide' }, { status: 401 })
     }
 
+    // ── Chargement des annonces publiées du workspace ─────────────────────────
+    const { data: annonces } = await supabase
+      .from('annonces')
+      .select('id, titre, type_bien, surface, pieces, localisation, prix, equipements, description_courte, reference_mandat')
+      .eq('workspace_id', workspace.id)
+      .eq('statut', 'publie')
+      .order('created_at', { ascending: false })
+      .limit(25)
+
+    const listingsSection = formatListingsForPrompt((annonces ?? []) as Annonce[])
+    const systemPrompt = BASE_SYSTEM_PROMPT
+      .replace('{AGENCY_NAME}', workspace.name)
+      .replace('{LISTINGS_SECTION}', listingsSection)
+
     // ── Appel Claude ─────────────────────────────────────────────────────────
     const response = await client.messages.create({
       model: MODEL,
       max_tokens: 500,
-      system: SYSTEM_PROMPT,
+      system: systemPrompt,
       messages,
     })
 
