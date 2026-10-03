@@ -1,9 +1,9 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import { Bot, Flame, Minus, Snowflake } from 'lucide-react'
+import { Bot, Flame, Minus, Snowflake, Link2, MessageSquare, Code2 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { formatDate } from '@/lib/utils'
+import CopyButton from '@/components/CopyButton'
 import type { Lead } from '@/types'
 
 export const metadata = { title: 'Leads & Chatbot' }
@@ -48,7 +48,9 @@ export default async function LeadsPage() {
   ])
 
   const apiKey = workspaceRes.data?.api_key ?? ''
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://immoai.fr'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://immoai-nine.vercel.app'
+  const chatUrl = `${appUrl}/chat/${apiKey}`
+  const embedCode = `<script src="${appUrl}/widget.js"\n  data-key="${apiKey}"\n  data-color="#2563EB">\n</script>`
   const list = (leadsRes.data ?? []) as Lead[]
 
   const counts = {
@@ -86,25 +88,59 @@ export default async function LeadsPage() {
         })}
       </div>
 
-      {/* Widget integration */}
-      <Card className="mb-8 border-blue-200 bg-blue-50">
-        <CardHeader>
-          <CardTitle className="text-blue-900 flex items-center gap-2 text-base">
-            <Bot className="h-5 w-5" /> Intégrer le chatbot sur votre site
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-blue-700 mb-3">
-            Copiez ce code avant le <code className="bg-blue-100 px-1 rounded">&lt;/body&gt;</code> :
-          </p>
-          <pre className="bg-blue-900 text-blue-100 text-xs p-4 rounded-lg overflow-x-auto select-all">
-{`<script src="${appUrl}/widget.js"
-  data-key="${apiKey}"
-  data-color="#2563EB">
-</script>`}
-          </pre>
+      {/* Lien partageable */}
+      <Card className="mb-4 border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+        <CardContent className="p-5">
+          <div className="flex items-start gap-3 mb-4">
+            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center flex-shrink-0">
+              <MessageSquare className="h-5 w-5 text-white" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-gray-900">Lien chatbot à partager</h3>
+              <p className="text-sm text-gray-500">Partagez ce lien par WhatsApp, email ou sur votre site — aucune installation requise</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 bg-white border border-blue-200 rounded-xl px-4 py-3">
+            <Link2 className="h-4 w-4 text-blue-400 flex-shrink-0" />
+            <span className="flex-1 text-sm text-gray-700 font-mono truncate">{chatUrl}</span>
+            <CopyButton text={chatUrl} label="Copier" />
+          </div>
+          <div className="flex gap-2 mt-3">
+            <a
+              href={chatUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Tester le chatbot →
+            </a>
+            <a
+              href={`https://wa.me/?text=${encodeURIComponent('Discutez avec notre assistant immobilier : ' + chatUrl)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs bg-green-500 text-white px-3 py-1.5 rounded-lg hover:bg-green-600 transition-colors"
+            >
+              Partager WhatsApp
+            </a>
+          </div>
         </CardContent>
       </Card>
+
+      {/* Embed avancé (replié) */}
+      <details className="mb-8 group">
+        <summary className="flex items-center gap-2 text-sm text-gray-400 cursor-pointer hover:text-gray-600 mb-2 select-none">
+          <Code2 className="h-4 w-4" />
+          Option avancée — intégrer le widget sur votre site
+          <span className="ml-auto text-xs group-open:hidden">Afficher</span>
+          <span className="ml-auto text-xs hidden group-open:inline">Masquer</span>
+        </summary>
+        <div className="bg-gray-900 rounded-xl p-4 relative">
+          <div className="absolute top-3 right-3">
+            <CopyButton text={embedCode} label="Copier" dark />
+          </div>
+          <pre className="text-green-300 text-xs font-mono overflow-x-auto pr-16">{embedCode}</pre>
+        </div>
+      </details>
 
       {list.length === 0 ? (
         <div className="text-center py-24">

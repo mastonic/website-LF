@@ -7,13 +7,22 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import type { AnnonceTon, AnnonceGenerateOutput } from '@/types'
 import Link from 'next/link'
 
 const TYPES_BIEN = [
-  'Appartement', 'Maison', 'Villa', 'Studio', 'Loft', 'Duplex', 'Triplex',
-  'Terrain', 'Local commercial', 'Bureau', 'Entrepôt', 'Parking',
+  { label: 'Appartement', icon: '🏢' },
+  { label: 'Maison', icon: '🏠' },
+  { label: 'Villa', icon: '🏡' },
+  { label: 'Studio', icon: '🛏' },
+  { label: 'Loft', icon: '🏗' },
+  { label: 'Duplex', icon: '🔼' },
+  { label: 'Triplex', icon: '⬆' },
+  { label: 'Terrain', icon: '🌿' },
+  { label: 'Local commercial', icon: '🏪' },
+  { label: 'Bureau', icon: '💼' },
+  { label: 'Entrepôt', icon: '🏭' },
+  { label: 'Parking', icon: '🅿' },
 ]
 
 const EQUIPEMENTS = [
@@ -176,12 +185,23 @@ export default function NouvelleAnnoncePage() {
             <CardContent className="space-y-4">
               <div>
                 <Label>Type de bien *</Label>
-                <Select value={form.type_bien} onValueChange={v => update('type_bien', v)}>
-                  <SelectTrigger className="mt-1"><SelectValue placeholder="Sélectionner..." /></SelectTrigger>
-                  <SelectContent>
-                    {TYPES_BIEN.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
-                  </SelectContent>
-                </Select>
+                <div className="mt-2 grid grid-cols-3 gap-2">
+                  {TYPES_BIEN.map(({ label, icon }) => (
+                    <button
+                      key={label}
+                      type="button"
+                      onClick={() => update('type_bien', label)}
+                      className={`flex flex-col items-center justify-center gap-1 py-2.5 px-2 rounded-xl border text-xs font-medium transition-all ${
+                        form.type_bien === label
+                          ? 'border-blue-600 bg-blue-600 text-white shadow-sm'
+                          : 'border-gray-200 bg-white text-gray-600 hover:border-blue-300 hover:bg-blue-50'
+                      }`}
+                    >
+                      <span className="text-lg">{icon}</span>
+                      <span>{label}</span>
+                    </button>
+                  ))}
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
