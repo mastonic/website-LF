@@ -37,13 +37,16 @@ export interface Annonce {
   surface: number | null
   pieces: number | null
   localisation: string | null
+  prix: number | null
   equipements: string[] | null
   points_forts: string | null
+  reference_mandat: string | null
   ton: AnnonceTon
   titre: string | null
   description_longue: string | null
   description_courte: string | null
   description_en: string | null
+  photos: string[] | null
   statut: AnnonceStatut
   tokens_used: number
   created_at: string
