@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
   Building2, LayoutDashboard, FileText, Bot, FolderOpen,
-  BarChart3, Share2, Users, Settings, LogOut, Zap, Palette
+  BarChart3, Share2, Users, Settings, LogOut, Zap, Palette, Layers
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/client'
@@ -20,6 +20,7 @@ const navItems = [
   { href: '/social', label: 'Contenu social', icon: Share2 },
   { href: '/crm', label: 'Suivi client', icon: Users },
   { href: '/marque', label: 'Ma marque', icon: Palette },
+  { href: '/studio', label: 'Studio visuel', icon: Layers },
 ]
 
 interface SidebarProps {
