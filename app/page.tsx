@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import EstimationSimulator from '@/components/landing/EstimationSimulator'
 import { Building2, Bot, FileText, BarChart3, Share2, Users, ArrowRight, Check } from 'lucide-react'
 
 const features = [
@@ -50,9 +51,23 @@ export default function LandingPage() {
           <Link href="/register" className="bg-blue-600 text-white px-8 py-3 rounded-lg text-lg font-medium hover:bg-blue-700 transition-colors flex items-center gap-2">
             Démarrer gratuitement <ArrowRight className="h-5 w-5" />
           </Link>
+          <Link href="#simulateur" className="border border-blue-600 text-blue-700 px-8 py-3 rounded-lg text-lg font-medium hover:bg-blue-50 transition-colors">
+            Estimer un bien
+          </Link>
           <Link href="#fonctionnalites" className="text-gray-600 px-8 py-3 rounded-lg text-lg hover:text-gray-900 transition-colors">
             Voir les fonctionnalités
           </Link>
+        </div>
+      </section>
+
+      {/* Simulateur */}
+      <section id="simulateur" className="py-20 px-6 bg-blue-50/50 border-y">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-3xl font-bold text-gray-900 text-center mb-3">Estimez un bien en 30 secondes</h2>
+          <p className="text-gray-600 text-center mb-10 max-w-2xl mx-auto">
+            Essai gratuit, sans inscription. Basé sur les ventes réelles publiées par l'État (DVF), autour de l'adresse.
+          </p>
+          <EstimationSimulator />
         </div>
       </section>
 
