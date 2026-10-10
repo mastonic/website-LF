@@ -36,7 +36,9 @@ export async function middleware(request: NextRequest) {
                            request.nextUrl.pathname.startsWith('/crm') ||
                            request.nextUrl.pathname.startsWith('/parametres') ||
                            request.nextUrl.pathname.startsWith('/marque') ||
-                           request.nextUrl.pathname.startsWith('/studio')
+                           request.nextUrl.pathname.startsWith('/studio') ||
+                           request.nextUrl.pathname.startsWith('/validation') ||
+                           request.nextUrl.pathname.startsWith('/vendeurs')
 
   if (!user && isDashboardRoute) {
     const url = request.nextUrl.clone()

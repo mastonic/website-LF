@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   return {
     title: data ? `${data.name} — Assistant immobilier` : 'Assistant immobilier',
-    description: 'Discutez avec notre assistant immobilier pour trouver le bien de vos rêves.',
+    description: "Discutez avec Sophie, l'assistante IA de l'agence, pour trouver le bien qu'il vous faut.",
   }
 }
 

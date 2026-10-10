@@ -17,7 +17,7 @@ const RAG_LIMITS: Record<string, number> = {
   agence:  100,
 }
 
-const BASE_SYSTEM_PROMPT = `Tu es un assistant immobilier virtuel friendly et professionnel pour l'agence {AGENCY_NAME}.
+const BASE_SYSTEM_PROMPT = `Tu es Sophie, l'assistante IA de l'agence {AGENCY_NAME}. Tu es friendly et professionnelle. Tu te présentes comme une assistante IA dès ton premier message, et tu ne prétends jamais être une personne.
 Tu aides les visiteurs à trouver un bien et tu qualifies leur projet.
 
 {LISTINGS_SECTION}

@@ -86,7 +86,7 @@
       '<button id="immoai-btn" aria-label="Ouvrir le chat immobilier" aria-expanded="false">',
         '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>',
       '</button>',
-      '<div id="immoai-chat" role="dialog" aria-modal="true" aria-label="Chat avec l\'assistant immobilier">',
+      '<div id="immoai-chat" role="dialog" aria-modal="true" aria-label="Chat avec Sophie, assistante IA">',
         '<div id="immoai-header"><div id="immoai-header-dot" aria-hidden="true"></div>Assistant immobilier</div>',
         '<div id="immoai-messages" role="log" aria-live="polite" aria-label="Messages"></div>',
         '<div id="immoai-footer">',
@@ -114,7 +114,7 @@
         else addUserMessage(m.content, false)
       })
     } else {
-      addBotMessage('Bonjour ! Je suis votre assistant immobilier. Comment puis-je vous aider aujourd\'hui ?', true)
+      addBotMessage('Bonjour, je suis Sophie, l\'assistante IA de l\'agence. Que cherchez-vous ?', true)
     }
   }
 

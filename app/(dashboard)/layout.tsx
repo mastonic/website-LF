@@ -26,9 +26,16 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   if (!workspace) redirect('/login')
 
+  // Nombre d'éléments en attente de validation (annonces brouillon + nouveaux contacts)
+  const [draftsRes, newLeadsRes] = await Promise.all([
+    supabase.from('annonces').select('id', { count: 'exact', head: true }).eq('workspace_id', member.workspace_id).eq('statut', 'brouillon'),
+    supabase.from('leads').select('id', { count: 'exact', head: true }).eq('workspace_id', member.workspace_id).eq('statut', 'nouveau'),
+  ])
+  const pendingCount = (draftsRes.count ?? 0) + (newLeadsRes.count ?? 0)
+
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      <Sidebar workspace={workspace as Workspace} />
+    <div className="flex min-h-screen bg-background">
+      <Sidebar workspace={workspace as Workspace} pendingCount={pendingCount} />
       <main className="flex-1 overflow-auto">
         {children}
       </main>

@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { formatDate } from '@/lib/utils'
 import type { Annonce } from '@/types'
 
-export const metadata = { title: 'Annonces IA' }
+export const metadata = { title: 'Julien — Annonces' }
 
 export default async function AnnoncesPage() {
   const supabase = createClient()
@@ -36,7 +36,7 @@ export default async function AnnoncesPage() {
     <div className="p-8">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Annonces IA</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Julien — Annonces</h1>
           <p className="text-gray-500 text-sm mt-1">{list.length} annonce{list.length > 1 ? 's' : ''} créée{list.length > 1 ? 's' : ''}</p>
         </div>
         <Link href="/annonces/nouvelle"

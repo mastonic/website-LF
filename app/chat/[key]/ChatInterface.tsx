@@ -65,10 +65,10 @@ export default function ChatInterface({
       if (data.message) {
         setMessages([{ role: 'assistant', content: data.message }])
       } else {
-        setMessages([{ role: 'assistant', content: `Bonjour ! Je suis l'assistant de ${agencyName}. Comment puis-je vous aider ?` }])
+        setMessages([{ role: 'assistant', content: `Bonjour, je suis Sophie, l'assistante IA de ${agencyName}. Que cherchez-vous ?` }])
       }
     } catch {
-      setMessages([{ role: 'assistant', content: `Bonjour ! Je suis l'assistant de ${agencyName}. Comment puis-je vous aider ?` }])
+      setMessages([{ role: 'assistant', content: `Bonjour, je suis Sophie, l'assistante IA de ${agencyName}. Que cherchez-vous ?` }])
     } finally {
       setLoading(false)
       setTimeout(() => inputRef.current?.focus(), 100)
@@ -118,7 +118,7 @@ export default function ChatInterface({
         </div>
         <h2 className="text-2xl font-bold text-gray-900 mb-2">{agencyName}</h2>
         <p className="text-gray-500 mb-2 max-w-xs">
-          Notre assistant immobilier est disponible 24h/24 pour répondre à vos questions.
+          Sophie, assistante IA de l'agence, répond à vos questions 24h/24.
         </p>
         <p className="text-xs text-gray-400 mb-8 max-w-xs">
           Dites-nous ce que vous recherchez et nous vous trouverons le bien idéal.

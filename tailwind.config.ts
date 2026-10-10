@@ -6,6 +6,7 @@ const config: Config = {
     './pages/**/*.{ts,tsx}',
     './components/**/*.{ts,tsx}',
     './app/**/*.{ts,tsx}',
+    './lib/**/*.{ts,tsx}',
   ],
   theme: {
     container: {
@@ -15,6 +16,11 @@ const config: Config = {
     },
     extend: {
       colors: {
+        // Accent terracotta : remplace le bleu par défaut (PRD design ImmoAI)
+        blue: {
+          50: '#FBF3EE', 100: '#F6E4D9', 200: '#EBC8B2', 300: '#DDA484', 400: '#CD7E56',
+          500: '#BE5F37', 600: '#A94E2B', 700: '#8A3F23', 800: '#6F3420', 900: '#5A2C1C', 950: '#3A1C12',
+        },
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
