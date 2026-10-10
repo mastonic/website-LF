@@ -9,6 +9,7 @@ export default function RegisterPage() {
   const [form, setForm] = useState({ email: '', password: '', workspace_name: '', nom: '' })
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [notice, setNotice] = useState<string | null>(null)
   const router = useRouter()
   const supabase = createClient()
 
@@ -22,7 +23,7 @@ export default function RegisterPage() {
     setLoading(true)
     setError(null)
 
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email: form.email,
       password: form.password,
       options: {
@@ -32,7 +33,12 @@ export default function RegisterPage() {
     })
 
     if (error) { setError(error.message); setLoading(false) }
-    else { router.push('/dashboard') }
+    else if (data.session) { router.push('/dashboard'); router.refresh() }
+    else {
+      // Confirmation email requise : pas de session tant que le lien n'est pas cliqué
+      setNotice(`Compte créé. Un email de confirmation vient d'être envoyé à ${form.email} : cliquez sur le lien, puis connectez-vous.`)
+      setLoading(false)
+    }
   }
 
   return (
@@ -75,7 +81,10 @@ export default function RegisterPage() {
         </div>
 
         {error && (
-          <div className="text-sm p-3 rounded-lg bg-red-50 text-red-700">{error}</div>
+          <div role="alert" className="text-sm p-3 rounded-lg bg-red-50 text-red-700">Erreur : {error}</div>
+        )}
+        {notice && (
+          <div role="status" className="text-sm p-3 rounded-lg bg-green-50 text-green-800">{notice}</div>
         )}
 
         <button type="submit" disabled={loading}
