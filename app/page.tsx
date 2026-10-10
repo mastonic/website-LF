@@ -3,16 +3,16 @@ import EstimationSimulator from '@/components/landing/EstimationSimulator'
 import { Building2, Bot, FileText, BarChart3, Share2, Users, ArrowRight, Check } from 'lucide-react'
 
 const features = [
-  { icon: FileText, title: 'Générateur d\'annonces IA', desc: 'Créez des annonces SEO optimisées en 30 secondes, dans 4 tons différents.' },
+  { icon: FileText, title: 'Générateur d\'annonces', desc: 'Créez des annonces SEO optimisées en 30 secondes, dans 4 tons différents.' },
   { icon: Bot, title: 'Chatbot qualificateur', desc: 'Widget embeddable qui capture et score vos leads 24h/24.' },
   { icon: FileText, title: 'Assistant administratif', desc: 'Résumez vos PDF, extrayez les données clés, générez vos mandats.' },
-  { icon: BarChart3, title: 'Estimateur de prix IA', desc: 'Rapports d\'estimation pro avec comparables et argumentaire vendeur.' },
+  { icon: BarChart3, title: 'Estimateur de prix', desc: 'Rapports d\'estimation pro avec comparables et argumentaire vendeur.' },
   { icon: Share2, title: 'Contenu social', desc: 'Posts Instagram, Facebook, newsletters — générés en 1 clic.' },
   { icon: Users, title: 'Suivi client CRM', desc: 'Pipeline, rappels intelligents, compte-rendus de visite dictés.' },
 ]
 
 const plans = [
-  { name: 'Starter', price: '29', users: '1 utilisateur', annonces: '20 annonces IA/mois', features: ['Générateur d\'annonces', 'Chatbot widget', 'Essai 7 jours gratuit'] },
+  { name: 'Starter', price: '29', users: '1 utilisateur', annonces: '20 annonces/mois', features: ['Générateur d\'annonces', 'Chatbot widget', 'Essai 7 jours gratuit'] },
   { name: 'Pro', price: '59', users: '3 utilisateurs', annonces: 'Illimité', features: ['Tous les modules', 'Assistant documents', 'Estimateur prix', 'Essai 7 jours gratuit'], highlight: true },
   { name: 'Agence', price: '149', users: '10 utilisateurs', annonces: 'Illimité', features: ['API & widget custom', 'Branding agence', 'Support prioritaire', 'Essai 7 jours gratuit'] },
 ]
@@ -38,10 +38,10 @@ export default function LandingPage() {
       <section className="max-w-7xl mx-auto px-6 py-24 text-center">
         <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 text-sm px-4 py-2 rounded-full mb-6">
           <Bot className="h-4 w-4" />
-          Propulsé par Claude IA (Anthropic)
+          Conçu pour les agents indépendants
         </div>
         <h1 className="text-5xl font-bold text-gray-900 mb-6 leading-tight">
-          Le copilote IA des<br />agents immobiliers
+          Le copilote des<br />agents immobiliers
         </h1>
         <p className="text-xl text-gray-600 mb-10 max-w-2xl mx-auto">
           Annonces, leads, documents, estimations — ImmoAI automatise vos tâches

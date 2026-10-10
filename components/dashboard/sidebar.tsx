@@ -93,7 +93,7 @@ export function Sidebar({ workspace, pendingCount = 0 }: SidebarProps) {
       <div className="p-4 border-t border-border">
         <div className="flex items-center gap-2 mb-2">
           <Zap className="h-4 w-4 text-blue-600" />
-          <span className="text-xs text-gray-500">Quota IA</span>
+          <span className="text-xs text-gray-500">Quota mensuel</span>
           <span className="text-xs text-gray-700 ml-auto">{workspace.ai_quota_used}/{workspace.ai_quota_limit}</span>
         </div>
         <div className="w-full bg-gray-200 rounded-full h-1.5">

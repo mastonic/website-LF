@@ -199,8 +199,8 @@ export default function NouvelleAnnoncePage() {
           <ArrowLeft className="h-5 w-5" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Nouvelle annonce IA</h1>
-          <p className="text-gray-500 text-sm">Remplissez les informations, Claude rédige pour vous</p>
+          <h1 className="text-2xl font-bold text-gray-900">Nouvelle annonce</h1>
+          <p className="text-gray-500 text-sm">Remplissez les informations, Julien rédige pour vous</p>
         </div>
       </div>
 
@@ -313,7 +313,7 @@ export default function NouvelleAnnoncePage() {
 
           <Button onClick={handleGenerate} disabled={loading} className="w-full h-12 text-base">
             {loading ? (
-              <><Loader2 className="h-5 w-5 mr-2 animate-spin" /> Claude rédige... ({elapsed}s)</>
+              <><Loader2 className="h-5 w-5 mr-2 animate-spin" /> Julien rédige... ({elapsed}s)</>
             ) : (
               <><Wand2 className="h-5 w-5 mr-2" /> Générer l'annonce</>
             )}
@@ -336,7 +336,7 @@ export default function NouvelleAnnoncePage() {
             <div className="flex items-center justify-center h-full min-h-[400px] border-2 border-dashed border-blue-200 rounded-xl bg-blue-50">
               <div className="text-center text-blue-500">
                 <Loader2 className="h-12 w-12 mx-auto mb-3 animate-spin" />
-                <p className="text-sm font-medium">Claude rédige votre annonce...</p>
+                <p className="text-sm font-medium">Julien rédige votre annonce...</p>
                 <p className="text-xs mt-1 text-blue-400">{elapsed}s — généralement 10-20 secondes</p>
               </div>
             </div>

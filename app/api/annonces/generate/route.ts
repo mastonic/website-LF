@@ -29,7 +29,7 @@ export async function POST(request: Request) {
     if (quotaErr) throw new Error(`Erreur quota: ${quotaErr.message}`)
     if (!quotaOk) {
       return NextResponse.json(
-        { error: 'Quota IA épuisé. Upgradez votre plan.' },
+        { error: 'Quota mensuel épuisé. Upgradez votre plan.' },
         { status: 429 }
       )
     }

@@ -6,7 +6,7 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: { default: 'ImmoAI', template: '%s | ImmoAI' },
-  description: 'Le copilote IA des agents immobiliers',
+  description: 'Le copilote des agents immobiliers',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

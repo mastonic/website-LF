@@ -51,7 +51,7 @@ export default async function ParametresPage() {
           <CardContent>
             <p className="text-sm font-medium text-gray-900 mb-1">{planLabels[ws?.plan ?? 'trial']}</p>
             <p className="text-sm text-gray-500">
-              Usage IA : {ws?.ai_quota_used ?? 0} / {ws?.ai_quota_limit ?? 20} appels ce mois
+              Utilisation : {ws?.ai_quota_used ?? 0} / {ws?.ai_quota_limit ?? 20} appels ce mois
             </p>
             <a href="#" className="mt-4 inline-block text-sm text-blue-600 hover:underline font-medium">
               Changer de plan →

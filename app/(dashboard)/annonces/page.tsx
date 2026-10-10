@@ -50,7 +50,7 @@ export default async function AnnoncesPage() {
         <div className="text-center py-24">
           <FileText className="h-16 w-16 mx-auto mb-4 text-gray-300" />
           <h2 className="text-lg font-semibold text-gray-700 mb-2">Aucune annonce encore</h2>
-          <p className="text-gray-500 text-sm mb-6">Générez votre première annonce immobilière avec l'IA Claude</p>
+          <p className="text-gray-500 text-sm mb-6">Générez votre première annonce immobilière avec Julien</p>
           <Link href="/annonces/nouvelle"
             className="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors">
             <Plus className="h-4 w-4" />
