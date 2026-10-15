@@ -149,3 +149,41 @@ export async function claudeJSON<T>(
     tokens: message.usage.input_tokens + message.usage.output_tokens,
   }
 }
+
+
+// ─── Helper : une requête avec images, une réponse JSON ──────────────────────
+export interface ImageInput {
+  mediaType: 'image/jpeg' | 'image/png' | 'image/webp'
+  /** Contenu de l'image encodé en base64. */
+  data: string
+}
+
+export async function claudeVisionJSON<T>(
+  system: string,
+  text: string,
+  images: ImageInput[],
+  maxTokens = 2500
+): Promise<{ data: T; tokens: number }> {
+  const message = await client.messages.create({
+    model: MODEL,
+    max_tokens: maxTokens,
+    system,
+    messages: [
+      {
+        role: 'user',
+        content: [
+          ...images.flatMap((img, i) => [
+            { type: 'text' as const, text: `Photo ${i + 1} :` },
+            { type: 'image' as const, source: { type: 'base64' as const, media_type: img.mediaType, data: img.data } },
+          ]),
+          { type: 'text' as const, text },
+        ],
+      },
+    ],
+  })
+  const raw = message.content[0].type === 'text' ? message.content[0].text : ''
+  return {
+    data: extractJSON(raw) as T,
+    tokens: message.usage.input_tokens + message.usage.output_tokens,
+  }
+}

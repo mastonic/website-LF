@@ -5,6 +5,8 @@ import { getWorkspaceContext } from '@/lib/workspace'
 import type { EstimationResult } from '@/lib/dvf'
 import type { Ajustement, Issue, PosteTravaux, RaisonPerte } from '@/lib/estimation'
 import type { RapportEstimation } from '@/lib/estimation-report'
+import type { AnalysePhotos, PhotoBien } from '@/lib/photos-shared'
+import { photosAffichees } from '@/lib/photos'
 import { EstimationClient } from '@/components/estimation/EstimationClient'
 
 export const metadata = { title: 'Thomas — Dossier d’estimation' }
@@ -18,6 +20,8 @@ export default async function EstimationDetailPage({ params }: { params: { id: s
     .eq('workspace_id', workspaceId)
     .single()
   if (!row || !row.resultat) notFound()
+
+  const photos = await photosAffichees((row.photos ?? []) as PhotoBien[])
 
   return (
     <div className="p-4 sm:p-8 max-w-5xl print:p-0">
@@ -40,6 +44,8 @@ export default async function EstimationDetailPage({ params }: { params: { id: s
         initialRapport={(row.rapport ?? null) as RapportEstimation | null}
         initialIssue={(row.issue ?? 'en_cours') as Issue}
         initialRaison={(row.raison_perte ?? null) as RaisonPerte | null}
+        initialPhotos={photos}
+        initialAnalysePhotos={(row.analyse_photos ?? null) as AnalysePhotos | null}
       />
     </div>
   )

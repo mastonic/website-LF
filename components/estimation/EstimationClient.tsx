@@ -14,6 +14,8 @@ import {
   type RaisonPerte,
 } from '@/lib/estimation'
 import type { RapportEstimation } from '@/lib/estimation-report'
+import type { AnalysePhotos, PhotoAffichee } from '@/lib/photos-shared'
+import { PhotosBien } from '@/components/estimation/PhotosBien'
 
 interface Props {
   id: string
@@ -31,6 +33,8 @@ interface Props {
   initialRapport: RapportEstimation | null
   initialIssue: Issue
   initialRaison: RaisonPerte | null
+  initialPhotos?: PhotoAffichee[]
+  initialAnalysePhotos?: AnalysePhotos | null
 }
 
 const eur = (n: number) =>
@@ -235,6 +239,21 @@ export function EstimationClient(p: Props) {
           Ces données ne disent rien de l’état des biens vendus. C’est pourquoi les travaux sont déduits ci-dessous, poste par poste.
         </p>
       </section>
+
+      {/* Photos de la visite */}
+      <PhotosBien
+        estimationId={p.id}
+        initialPhotos={p.initialPhotos ?? []}
+        initialAnalyse={p.initialAnalysePhotos ?? null}
+        postesExistants={travaux.map((t) => t.label)}
+        onChange={() => { if (rapport) setStale(true) }}
+        onAjouterTravaux={(t) => {
+          setTravaux((prev) =>
+            prev.some((x) => x.label === t.poste) ? prev : [...prev, { id: uid(), label: t.poste, montant: 0, note: t.pourquoi.slice(0, 300) }]
+          )
+          touch()
+        }}
+      />
 
       {/* Saisies de l'agent */}
       <section aria-labelledby="h-travaux" className="rounded-xl border bg-white p-6 print:hidden">

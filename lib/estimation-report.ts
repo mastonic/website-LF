@@ -1,6 +1,7 @@
 import { claudeJSON } from '@/lib/claude'
 import type { EstimationResult } from '@/lib/dvf'
 import type { Ajustement, PosteTravaux, ScenariosResult } from '@/lib/estimation'
+import type { AnalysePhotos } from '@/lib/photos-shared'
 
 export interface RapportSection {
   titre: string
@@ -30,6 +31,7 @@ export interface ReportInput {
   ajustements: Ajustement[]
   scenarios: ScenariosResult
   agentNom?: string | null
+  analysePhotos?: AnalysePhotos | null
 }
 
 const eur = (n: number) => `${Math.round(n).toLocaleString('fr-FR')} €`
@@ -40,6 +42,7 @@ RÈGLES ABSOLUES
 - Tu n'inventes AUCUN chiffre. Tu n'utilises que les chiffres fournis dans les données. Si une donnée manque, tu le dis.
 - Tu ne fais pas de promesse de prix ni de délai de vente.
 - Les ventes officielles (DVF) ne disent rien de l'état des biens vendus : tu le rappelles dans la méthode et tu expliques que les travaux sont déduits poste par poste d'après la visite de l'agent.
+- Les observations tirées des photos sont indicatives : tu les présentes comme telles (« les photos montrent… », « à confirmer sur place ») et tu n'en déduis aucun montant.
 - Si un autre avis de valeur est fourni, tu te contentes de situer le prix par rapport aux ventes réelles. Tu ne critiques ni l'agence ni le vendeur. Tu ne conseilles jamais de surévaluer pour obtenir le mandat : tu expliques ce qu'un prix trop haut coûte au vendeur (temps de vente plus long, négociation plus forte) sans chiffrer ce que tu ne peux pas chiffrer.
 - Ton : clair, posé, factuel, en français, vouvoiement du propriétaire, phrases courtes, pas de jargon ni d'anglicismes, pas d'emphase.
 - Tu ne mentionnes jamais d'intelligence artificielle, d'outil automatique ni d'algorithme.
@@ -72,6 +75,15 @@ export function buildReportPrompt(i: ReportInput): string {
     ? `Un autre avis de valeur reçu par le vendeur : ${eur(ac.prix)} (${ac.prixM2.toLocaleString('fr-FR')} €/m²), soit ${ac.ecartVsMarche >= 0 ? '+' : ''}${eur(ac.ecartVsMarche)} (${ac.ecartVsMarchePct >= 0 ? '+' : ''}${ac.ecartVsMarchePct} %) par rapport au prix de marché en l'état. ${ac.auDessusFourchette ? `Il dépasse le haut de la fourchette de ${eur(ac.ecartVsHaut)}.` : 'Il reste dans la fourchette.'}`
     : 'Aucun autre avis de valeur fourni.'
 
+  const ph = i.analysePhotos
+  const photos = ph
+    ? `OBSERVATIONS SUR LES PHOTOS DE LA VISITE (indicatives, à confirmer sur place)
+- État visible : ${ph.etat_general || 'non précisé'}
+${ph.pieces.map((p) => `- Photo ${p.photo}${p.piece ? ` (${p.piece})` : ''} : ${p.observations.join(' ; ')}`).join('\n')}
+${ph.atouts.length ? `- Atouts visibles : ${ph.atouts.join(' ; ')}` : ''}
+${ph.a_verifier.length ? `- À vérifier sur place : ${ph.a_verifier.join(' ; ')}` : ''}`
+    : 'Aucune photo analysée.'
+
   return `DONNÉES DU BIEN
 - Adresse : ${i.adresse}
 - Type : ${i.typeBien}, ${i.surface} m²${i.pieces ? `, ${i.pieces} pièces` : ''}
@@ -79,6 +91,8 @@ export function buildReportPrompt(i: ReportInput): string {
 - Année de construction : ${i.anneeConstruction ?? 'non précisée'}
 - Équipements : ${i.equipements?.length ? i.equipements.join(', ') : 'non précisés'}
 - Remarques de l'agent : ${i.notes || 'aucune'}
+
+${photos}
 
 VENTES OFFICIELLES AUTOUR DU BIEN (demandes de valeurs foncières, data.gouv.fr)
 - ${d.nbVentes} ventes de ${i.typeBien.toLowerCase()}s retenues dans un rayon de ${d.rayonM} m, entre ${d.periode.debut} et ${d.periode.fin}

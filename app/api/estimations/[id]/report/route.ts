@@ -47,6 +47,7 @@ export async function POST(_req: Request, { params }: { params: { id: string } }
       ajustements: row.ajustements ?? [],
       scenarios,
       agentNom: brand?.nom_affiche ?? null,
+      analysePhotos: row.analyse_photos ?? null,
     })
     await supabase
       .from('estimations')
