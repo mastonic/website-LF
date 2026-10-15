@@ -1,15 +1,24 @@
-import { Share2 } from 'lucide-react'
-export const metadata = { title: 'Contenu social' }
-export default function SocialPage() {
+import { getWorkspaceContext } from '@/lib/workspace'
+import { SocialClient, type ContenuRow } from '@/components/social/SocialClient'
+
+export const metadata = { title: 'Chloé — Réseaux' }
+
+export default async function SocialPage() {
+  const { supabase, workspaceId } = await getWorkspaceContext()
+  const { data } = await supabase
+    .from('contenus')
+    .select('id, idee, format, plateforme, titre, contenu, statut, publie_le, created_at')
+    .eq('workspace_id', workspaceId)
+    .order('created_at', { ascending: false })
+    .limit(50)
+
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold text-gray-900 mb-2">Chloé — Contenu réseaux sociaux</h1>
-      <p className="text-gray-600 text-sm mb-8">Chloé rejoindra votre équipe dans une prochaine version.</p>
-      <div className="text-center py-24 border-2 border-dashed border-gray-200 rounded-xl">
-        <Share2 className="h-16 w-16 mx-auto mb-4 text-gray-300" />
-        <h2 className="text-lg font-semibold text-gray-700 mb-2">Chloé — Bientôt disponible</h2>
-        <p className="text-gray-500 text-sm">Publications Instagram et Facebook, stories et calendrier éditorial</p>
-      </div>
+    <div className="p-8 max-w-4xl">
+      <h1 className="text-2xl font-bold text-gray-900 mb-1">Chloé — Contenu réseaux</h1>
+      <p className="text-gray-500 text-sm mb-8">
+        Une idée, même vague, et Chloé prépare le texte à dire ou à publier, dans votre ton.
+      </p>
+      <SocialClient initial={(data ?? []) as ContenuRow[]} />
     </div>
   )
 }

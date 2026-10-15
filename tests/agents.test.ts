@@ -8,12 +8,12 @@ describe('équipe d’agents (PRD design)', () => {
     expect(new Set(AGENTS.map((a) => a.prenom)).size).toBe(8)
   })
 
-  it('place Alex, Victor, Sophie, Julien et Emma dans le MVP', () => {
-    expect(MVP_AGENTS.map((a) => a.prenom)).toEqual(['Alex', 'Victor', 'Sophie', 'Julien', 'Emma'])
+  it('place Alex, Victor, Sophie, Julien, Emma, Thomas et Chloé dans l’équipe active', () => {
+    expect(MVP_AGENTS.map((a) => a.prenom)).toEqual(['Alex', 'Victor', 'Sophie', 'Julien', 'Emma', 'Thomas', 'Chloé'])
   })
 
-  it('place Hugo, Thomas et Chloé en V2', () => {
-    expect(V2_AGENTS.map((a) => a.prenom)).toEqual(['Hugo', 'Thomas', 'Chloé'])
+  it('garde Hugo en V2', () => {
+    expect(V2_AGENTS.map((a) => a.prenom)).toEqual(['Hugo'])
   })
 
   it('retrouve un agent par identifiant', () => {

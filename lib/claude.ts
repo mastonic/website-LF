@@ -13,7 +13,7 @@ const TON_DESCRIPTIONS: Record<AnnonceTon, string> = {
 }
 
 // ─── Extraction JSON robuste (supporte les markdown fences) ──────────────────
-function extractJSON(text: string): unknown {
+export function extractJSON(text: string): unknown {
   // Retire les blocs ```json ... ``` ou ``` ... ```
   const stripped = text.replace(/```(?:json)?\s*([\s\S]*?)```/g, '$1').trim()
   const jsonMatch = stripped.match(/\{[\s\S]*\}/)
@@ -128,4 +128,24 @@ Réponds UNIQUEMENT en JSON valide, sans markdown.`,
   }
 
   return parsed
+}
+
+
+// ─── Helper générique : une requête, une réponse JSON ────────────────────────
+export async function claudeJSON<T>(
+  system: string,
+  user: string,
+  maxTokens = 2500
+): Promise<{ data: T; tokens: number }> {
+  const message = await client.messages.create({
+    model: MODEL,
+    max_tokens: maxTokens,
+    system,
+    messages: [{ role: 'user', content: user }],
+  })
+  const raw = message.content[0].type === 'text' ? message.content[0].text : ''
+  return {
+    data: extractJSON(raw) as T,
+    tokens: message.usage.input_tokens + message.usage.output_tokens,
+  }
 }

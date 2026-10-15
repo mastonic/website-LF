@@ -44,6 +44,13 @@ export interface EstimationResult {
   periode: { debut: string; fin: string }
   fiabilite: 'faible' | 'moyenne' | 'bonne'
   comparables: Comparable[]
+  /** Prix au m² médian par année de vente (ventes retenues pour l'estimation). */
+  parAnnee: { annee: number; prixM2Median: number; nbVentes: number }[]
+}
+
+export interface EstimateOptions {
+  /** Nombre de ventes comparables renvoyées (5 par défaut). */
+  maxComparables?: number
 }
 
 // ---------- CSV ----------
@@ -180,7 +187,11 @@ export function removeOutliers(sales: DvfSale[]): DvfSale[] {
 
 const round = (n: number, step: number) => Math.round(n / step) * step
 
-export function estimate(input: EstimationInput, sales: DvfSale[]): EstimationResult | null {
+export function estimate(
+  input: EstimationInput,
+  sales: DvfSale[],
+  opts: EstimateOptions = {}
+): EstimationResult | null {
   const sameType = removeOutliers(sales.filter((s) => s.type === input.type))
   const withDistance: Comparable[] = sameType.map((s) => ({
     ...s,
@@ -219,7 +230,23 @@ export function estimate(input: EstimationInput, sales: DvfSale[]): EstimationRe
       const sb = Math.abs(b.surface - input.surface) / input.surface + b.distanceM / 2000
       return sa - sb
     })
-    .slice(0, 5)
+    .slice(0, opts.maxComparables ?? 5)
+
+  const parAnneeMap = new Map<number, number[]>()
+  for (const s of base) {
+    const y = Number(s.date.slice(0, 4))
+    if (!Number.isFinite(y)) continue
+    const list = parAnneeMap.get(y)
+    if (list) list.push(s.prixM2)
+    else parAnneeMap.set(y, [s.prixM2])
+  }
+  const parAnnee = Array.from(parAnneeMap.entries())
+    .sort((a, b) => a[0] - b[0])
+    .map(([annee, v]) => ({
+      annee,
+      prixM2Median: round(quantile(v.sort((a, b) => a - b), 0.5), 10),
+      nbVentes: v.length,
+    }))
 
   const fiabilite: EstimationResult['fiabilite'] =
     base.length >= 30 && rayonM <= 1000 ? 'bonne' : base.length >= MIN_VENTES ? 'moyenne' : 'faible'
@@ -236,6 +263,7 @@ export function estimate(input: EstimationInput, sales: DvfSale[]): EstimationRe
     periode: { debut: dates[0], fin: dates[dates.length - 1] },
     fiabilite,
     comparables,
+    parAnnee,
   }
 }
 

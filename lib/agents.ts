@@ -58,15 +58,15 @@ export const AGENTS: Agent[] = [
   },
   {
     id: 'thomas', prenom: 'Thomas', role: 'Estimation complète',
-    presentation: 'Je vous donne une fourchette de prix argumentée.',
+    presentation: 'Je retrouve les ventes réelles autour du bien et je vous prépare un dossier chiffré.',
     autonomie: 'Indicatif seulement',
-    version: 'v2', href: '/estimation', tint: 'bg-orange-100 text-orange-900',
+    version: 'mvp', href: '/estimation', tint: 'bg-orange-100 text-orange-900',
   },
   {
     id: 'chloe', prenom: 'Chloé', role: 'Contenu réseaux sociaux',
-    presentation: 'Je prépare vos publications.',
+    presentation: 'Je transforme vos idées en textes à dire ou à publier.',
     autonomie: 'Validation avant publication',
-    version: 'v2', href: '/social', tint: 'bg-violet-100 text-violet-900',
+    version: 'mvp', href: '/social', tint: 'bg-violet-100 text-violet-900',
   },
 ]
 

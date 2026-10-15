@@ -32,7 +32,7 @@ export function Sidebar({ workspace, pendingCount = 0 }: SidebarProps) {
   const teamAgents = MVP_AGENTS.filter((a) => a.id !== 'alex')
 
   return (
-    <aside className="w-64 min-h-screen bg-white border-r border-border flex flex-col">
+    <aside className="w-64 min-h-screen bg-white border-r border-border flex flex-col print:hidden">
       <div className="p-6 border-b border-border">
         <div className="flex items-center gap-2">
           <Building2 className="h-6 w-6 text-blue-600" />
