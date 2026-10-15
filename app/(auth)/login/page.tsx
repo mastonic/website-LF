@@ -6,12 +6,38 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
 export default function LoginPage() {
+  const [mode, setMode] = useState<'code' | 'email'>('code')
+  const [code, setCode] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const router = useRouter()
   const supabase = createClient()
+
+  async function handleCode(e: React.FormEvent) {
+    e.preventDefault()
+    setLoading(true)
+    setError(null)
+    try {
+      const res = await fetch('/api/auth/code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code }),
+      })
+      const json = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        setError(json.error ?? 'Connexion impossible.')
+        setLoading(false)
+        return
+      }
+      router.push('/dashboard')
+      router.refresh()
+    } catch {
+      setError('Connexion impossible. Réessayez.')
+      setLoading(false)
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -48,6 +74,31 @@ export default function LoginPage() {
       <h1 className="text-2xl font-bold text-gray-900 mb-2">Connexion</h1>
       <p className="text-gray-500 text-sm mb-6">Accédez à votre espace ImmoAI</p>
 
+      {mode === 'code' ? (
+        <>
+          <form onSubmit={handleCode} className="space-y-4">
+            <div>
+              <label htmlFor="code" className="block text-sm font-medium text-gray-700 mb-1">Votre code d’accès</label>
+              <input
+                id="code" type="password" required autoFocus autoComplete="current-password"
+                value={code} onChange={e => setCode(e.target.value)}
+                className="w-full border rounded-lg px-3 py-3 text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Saisissez votre code"
+              />
+            </div>
+            {error && <div role="alert" className="text-sm p-3 rounded-lg bg-red-50 text-red-700">{error}</div>}
+            <button type="submit" disabled={loading}
+              className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50">
+              {loading ? 'Connexion...' : 'Entrer'}
+            </button>
+          </form>
+          <button type="button" onClick={() => { setMode('email'); setError(null) }}
+            className="mt-6 w-full text-center text-sm text-gray-500 hover:text-gray-800">
+            Se connecter avec un email
+          </button>
+        </>
+      ) : (
+      <>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
@@ -92,6 +143,12 @@ export default function LoginPage() {
         Pas encore de compte ?{' '}
         <Link href="/register" className="text-blue-600 hover:underline font-medium">Essai gratuit 7 jours</Link>
       </p>
+      <button type="button" onClick={() => { setMode('code'); setError(null) }}
+        className="mt-3 w-full text-center text-sm text-gray-500 hover:text-gray-800">
+        Revenir au code d’accès
+      </button>
+      </>
+      )}
     </div>
   )
 }
