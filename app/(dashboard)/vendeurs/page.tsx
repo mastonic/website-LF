@@ -22,7 +22,7 @@ export default async function VendeursPage() {
   const vendeurs = (data ?? []) as Contact[]
 
   return (
-    <div className="p-4 sm:p-4 sm:p-8 max-w-4xl">
+    <div className="p-4 sm:p-8 max-w-4xl">
       <div className="flex items-center gap-4 mb-8">
         <AgentAvatar agent={victor} size="lg" />
         <div>

@@ -57,8 +57,8 @@ function scriptToText(c: ContenuGenere): string {
   return [c.texte, '', c.hashtags.map((h) => `#${h}`).join(' ')].join('\n')
 }
 
-export function SocialClient({ initial }: { initial: ContenuRow[] }) {
-  const [piste, setPiste] = useState('')
+export function SocialClient({ initial, initialPiste = '' }: { initial: ContenuRow[]; initialPiste?: string }) {
+  const [piste, setPiste] = useState(initialPiste)
   const [secteur, setSecteur] = useState('')
   const [idees, setIdees] = useState<IdeeContenu[]>([])
   const [idee, setIdee] = useState('')

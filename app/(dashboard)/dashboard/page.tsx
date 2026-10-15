@@ -3,6 +3,7 @@ import { getWorkspaceContext, needsFollowUp } from '@/lib/workspace'
 import { MVP_AGENTS, V2_AGENTS } from '@/lib/agents'
 import { AgentAvatar } from '@/components/agents/AgentAvatar'
 import { Card, CardContent } from '@/components/ui/card'
+import { AlexChat } from '@/components/agents/AlexChat'
 import type { Contact } from '@/types'
 
 export const metadata = { title: 'Mon équipe' }
@@ -26,7 +27,6 @@ export default async function DashboardPage() {
   const pending = drafts + newLeads + relances
 
   const statusLine: Record<string, string> = {
-    alex: 'La discussion en langage naturel arrive bientôt.',
     victor: vendeurs > 0 ? `${plural(vendeurs, 'vendeur suivi', 'vendeurs suivis')} dans votre pipeline` : 'Aucun vendeur dans votre pipeline pour l’instant',
     sophie: newLeads > 0 ? `${plural(newLeads, 'nouveau contact à rappeler', 'nouveaux contacts à rappeler')}` : 'Aucun nouveau contact en attente',
     julien: drafts > 0 ? `${plural(drafts, 'annonce à relire', 'annonces à relire')}` : 'Aucune annonce en attente de relecture',
@@ -34,11 +34,13 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div className="p-4 sm:p-4 sm:p-8 max-w-6xl">
+    <div className="p-4 sm:p-8 max-w-6xl">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900">Mon équipe</h1>
         <p className="text-gray-600 text-sm mt-1">Vos collaborateurs préparent le travail, vous gardez la décision.</p>
       </div>
+
+      <AlexChat />
 
       <Link
         href="/validation"
@@ -57,7 +59,7 @@ export default async function DashboardPage() {
 
       <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500 mb-3">Au travail</h2>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 mb-10">
-        {MVP_AGENTS.map((agent) => {
+        {MVP_AGENTS.filter((a) => a.id !== 'alex').map((agent) => {
           const inner = (
             <Card className="h-full transition-colors hover:border-blue-300">
               <CardContent className="p-5">
@@ -74,9 +76,7 @@ export default async function DashboardPage() {
               </CardContent>
             </Card>
           )
-          return agent.id === 'alex'
-            ? <div key={agent.id} aria-label="Alex, discussion bientôt disponible">{inner}</div>
-            : <Link key={agent.id} href={agent.href}>{inner}</Link>
+          return <Link key={agent.id} href={agent.href}>{inner}</Link>
         })}
       </div>
 

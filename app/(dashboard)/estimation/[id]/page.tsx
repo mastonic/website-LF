@@ -20,7 +20,7 @@ export default async function EstimationDetailPage({ params }: { params: { id: s
   if (!row || !row.resultat) notFound()
 
   return (
-    <div className="p-4 sm:p-4 sm:p-8 max-w-5xl print:p-0">
+    <div className="p-4 sm:p-8 max-w-5xl print:p-0">
       <Link href="/estimation" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-800 mb-4 print:hidden">
         <ArrowLeft className="h-4 w-4" /> Estimations
       </Link>
