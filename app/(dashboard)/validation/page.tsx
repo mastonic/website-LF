@@ -40,7 +40,7 @@ export default async function ValidationPage() {
   const total = annonces.length + leads.length + relances.length
 
   return (
-    <div className="p-8 max-w-4xl">
+    <div className="p-4 sm:p-4 sm:p-8 max-w-4xl">
       <h1 className="text-2xl font-bold text-gray-900">À valider</h1>
       <p className="text-gray-600 text-sm mt-1 mb-8">
         Rien ne part sous votre nom sans votre accord. {total > 0 ? `${total} élément${total > 1 ? 's' : ''} en attente.` : 'Tout est à jour.'}

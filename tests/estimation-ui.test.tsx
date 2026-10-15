@@ -51,7 +51,7 @@ describe('EstimationClient', () => {
   it('affiche les ventes autour et les trois prix', () => {
     render(<EstimationClient {...base} />)
     expect(screen.getByText('1 rue des Tilleuls, 78190 Trappes')).toBeTruthy()
-    expect(screen.getByText(/4 Rue des Tilleuls/)).toBeTruthy()
+    expect(screen.getAllByText(/4 Rue des Tilleuls/).length).toBeGreaterThan(0)
     expect(screen.getByText('Vente rapide')).toBeTruthy()
     expect(screen.getByText('Prix de marché')).toBeTruthy()
     expect(screen.getByText('Prix d’essai')).toBeTruthy()

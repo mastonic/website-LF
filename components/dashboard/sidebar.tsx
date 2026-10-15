@@ -12,11 +12,14 @@ import type { Workspace } from '@/types'
 interface SidebarProps {
   workspace: Workspace
   pendingCount?: number
+  /** Menu ouvert (téléphone et tablette). Sur grand écran la barre est toujours visible. */
+  open?: boolean
+  id?: string
 }
 
 const linkBase = 'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors min-h-[44px]'
 
-export function Sidebar({ workspace, pendingCount = 0 }: SidebarProps) {
+export function Sidebar({ workspace, pendingCount = 0, open = false, id }: SidebarProps) {
   const pathname = usePathname()
   const router = useRouter()
   const supabase = createClient()
@@ -32,7 +35,14 @@ export function Sidebar({ workspace, pendingCount = 0 }: SidebarProps) {
   const teamAgents = MVP_AGENTS.filter((a) => a.id !== 'alex')
 
   return (
-    <aside className="w-64 min-h-screen bg-white border-r border-border flex flex-col print:hidden">
+    <aside
+      id={id}
+      className={cn(
+        'fixed inset-y-0 left-0 z-40 w-64 max-w-[85vw] bg-white border-r border-border flex flex-col transition-transform duration-200 print:hidden',
+        'lg:static lg:z-auto lg:max-w-none lg:min-h-screen lg:translate-x-0 lg:visible',
+        open ? 'translate-x-0' : '-translate-x-full invisible'
+      )}
+    >
       <div className="p-6 border-b border-border">
         <div className="flex items-center gap-2">
           <Building2 className="h-6 w-6 text-blue-600" />

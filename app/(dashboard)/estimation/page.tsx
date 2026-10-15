@@ -28,7 +28,7 @@ export default async function EstimationPage() {
   const suivi = summarizeSuivi(list.map((e) => ({ issue: e.issue ?? 'en_cours', raison_perte: e.raison_perte })))
 
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-8">
       <div className="flex items-center justify-between mb-8 gap-4 flex-wrap">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Thomas — Estimation complète</h1>

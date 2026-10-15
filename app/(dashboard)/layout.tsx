@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { Sidebar } from '@/components/dashboard/sidebar'
+import { DashboardShell } from '@/components/dashboard/shell'
 import type { Workspace } from '@/types'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -34,11 +34,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const pendingCount = (draftsRes.count ?? 0) + (newLeadsRes.count ?? 0)
 
   return (
-    <div className="flex min-h-screen bg-background">
-      <Sidebar workspace={workspace as Workspace} pendingCount={pendingCount} />
-      <main className="flex-1 overflow-auto">
-        {children}
-      </main>
-    </div>
+    <DashboardShell workspace={workspace as Workspace} pendingCount={pendingCount}>
+      {children}
+    </DashboardShell>
   )
 }

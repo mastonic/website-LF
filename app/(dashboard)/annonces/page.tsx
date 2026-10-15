@@ -33,8 +33,8 @@ export default async function AnnoncesPage() {
   const statutVariant = { brouillon: 'secondary' as const, publie: 'success' as const, archive: 'outline' as const }
 
   return (
-    <div className="p-8">
-      <div className="flex items-center justify-between mb-8">
+    <div className="p-4 sm:p-8">
+      <div className="flex items-center justify-between flex-wrap gap-4 mb-8">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Julien — Annonces</h1>
           <p className="text-gray-500 text-sm mt-1">{list.length} annonce{list.length > 1 ? 's' : ''} créée{list.length > 1 ? 's' : ''}</p>

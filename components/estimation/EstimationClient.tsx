@@ -168,7 +168,7 @@ export function EstimationClient(p: Props) {
           {p.dvf.nbVentes} ventes de {p.typeBien.toLowerCase()}s dans un rayon de {p.dvf.rayonM} m, de {date(p.dvf.periode.debut)} à{' '}
           {date(p.dvf.periode.fin)}. Fiabilité : {FIABILITE[p.dvf.fiabilite]}. Source : demandes de valeurs foncières (data.gouv.fr).
         </p>
-        <div className="grid grid-cols-3 gap-3 mb-5">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
           {[
             ['Bas', p.dvf.prixM2Bas, p.dvf.estimationBasse],
             ['Médian', p.dvf.prixM2Median, p.dvf.estimationCentrale],
@@ -182,7 +182,22 @@ export function EstimationClient(p: Props) {
           ))}
         </div>
 
-        <div className="overflow-x-auto">
+        <p className="text-sm font-medium text-gray-700 mb-2 sm:hidden">Les ventes les plus proches</p>
+        <ul className="sm:hidden divide-y rounded-lg border">
+          {p.dvf.comparables.map((c) => (
+            <li key={c.id} className="p-3 text-sm">
+              <div className="flex justify-between gap-3">
+                <span className="font-medium text-gray-900">{c.voie || 'Adresse non précisée'}</span>
+                <span className="whitespace-nowrap text-gray-500">{date(c.date)}</span>
+              </div>
+              <div className="mt-1 text-gray-600">
+                {c.surface} m² · {eur(c.prix)} · {num(c.prixM2)} €/m² · à {num(c.distanceM)} m
+              </div>
+            </li>
+          ))}
+        </ul>
+
+        <div className="hidden sm:block overflow-x-auto">
           <table className="w-full text-sm">
             <caption className="text-left text-sm font-medium text-gray-700 mb-2">Les ventes les plus proches</caption>
             <thead>
@@ -497,7 +512,7 @@ export function EstimationClient(p: Props) {
           {issue === 'mandat_perdu' && (
             <>
               <label htmlFor="raison" className="sr-only">Raison</label>
-              <select id="raison" className={`${input} w-72`} value={raison ?? ''} onChange={(e) => saveIssue('mandat_perdu', (e.target.value || null) as RaisonPerte | null)}>
+              <select id="raison" className={`${input} w-full sm:w-72`} value={raison ?? ''} onChange={(e) => saveIssue('mandat_perdu', (e.target.value || null) as RaisonPerte | null)}>
                 <option value="">Raison (à préciser)</option>
                 {(Object.keys(RAISONS_PERTE) as RaisonPerte[]).map((k) => <option key={k} value={k}>{RAISONS_PERTE[k]}</option>)}
               </select>

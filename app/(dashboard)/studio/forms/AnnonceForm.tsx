@@ -126,7 +126,7 @@ export function AnnonceForm({ annonces, onPreview }: Props) {
       )}
 
       {/* Core fields */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label className="block text-xs font-medium text-gray-600 mb-1">
             Type de bien <CharCount value={typeBien} max={CHAR_LIMITS.annonce.typeBien} />
@@ -204,7 +204,7 @@ export function AnnonceForm({ annonces, onPreview }: Props) {
             <label className="block text-xs text-gray-600 mb-1">Précision du prix</label>
             <input type="text" value={precisionPrix} onChange={(e) => setPrecisionPrix(e.target.value)} placeholder="Charges comprises / Honoraires à charge acquéreur" maxLength={CHAR_LIMITS.annonce.precisionPrix} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block text-xs text-gray-600 mb-1">Classe énergie (DPE) *</label>
               <select value={classeEnergie} onChange={(e) => setClasseEnergie(e.target.value)} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">

@@ -64,7 +64,7 @@ export default function NouvelleEstimationPage() {
   }
 
   return (
-    <div className="p-8 max-w-3xl">
+    <div className="p-4 sm:p-4 sm:p-8 max-w-3xl">
       <Link href="/estimation" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-800 mb-4">
         <ArrowLeft className="h-4 w-4" /> Estimations
       </Link>

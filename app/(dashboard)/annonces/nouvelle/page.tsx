@@ -191,7 +191,7 @@ export default function NouvelleAnnoncePage() {
   }
 
   return (
-    <div className="p-8 max-w-5xl">
+    <div className="p-4 sm:p-4 sm:p-8 max-w-5xl">
       {toast && <Toast message={toast.message} type={toast.type} />}
 
       <div className="flex items-center gap-4 mb-8">
@@ -212,7 +212,7 @@ export default function NouvelleAnnoncePage() {
             <CardContent className="space-y-4">
               <div>
                 <Label>Type de bien *</Label>
-                <div className="mt-2 grid grid-cols-3 gap-2">
+                <div className="mt-2 grid grid-cols-2 sm:grid-cols-3 gap-2">
                   {TYPES_BIEN.map(({ label, icon }) => (
                     <button
                       key={label}
@@ -231,7 +231,7 @@ export default function NouvelleAnnoncePage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <Label>Surface (m²)</Label>
                   <input type="number" min="1" value={form.surface} onChange={e => update('surface', e.target.value)}
@@ -289,7 +289,7 @@ export default function NouvelleAnnoncePage() {
           <Card>
             <CardHeader><CardTitle>Ton de l'annonce</CardTitle></CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {(['standard', 'luxe', 'familial', 'investisseur'] as AnnonceTon[]).map(t => (
                   <button key={t} onClick={() => update('ton', t)}
                     className={`p-3 rounded-lg border text-left transition-colors ${

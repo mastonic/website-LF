@@ -18,7 +18,7 @@ export default async function ParametresPage() {
   const ws = workspace as Workspace
 
   return (
-    <div className="p-8 max-w-3xl">
+    <div className="p-4 sm:p-4 sm:p-8 max-w-3xl">
       <h1 className="text-2xl font-bold text-gray-900 mb-8">Paramètres</h1>
 
       <div className="space-y-6">

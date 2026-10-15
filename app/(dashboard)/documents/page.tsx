@@ -2,7 +2,7 @@ import { FolderOpen } from 'lucide-react'
 export const metadata = { title: 'Documents' }
 export default function DocumentsPage() {
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-8">
       <h1 className="text-2xl font-bold text-gray-900 mb-2">Hugo — Administratif</h1>
       <p className="text-gray-600 text-sm mb-8">Hugo rejoindra votre équipe dans une prochaine version.</p>
       <div className="text-center py-24 border-2 border-dashed border-gray-200 rounded-xl">

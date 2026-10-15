@@ -147,7 +147,7 @@ export function BrandForm({ brand, logoUrl: initialLogoUrl, avatarUrl: initialAv
           <Image className="h-4 w-4 text-blue-500" />
           Logo &amp; Photo de profil
         </h2>
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {(['logo', 'avatar'] as const).map((target) => {
             const url = target === 'logo' ? logoUrl : avatarUrl
             const ref = target === 'logo' ? logoRef : avatarRef
@@ -318,7 +318,7 @@ export function BrandForm({ brand, logoUrl: initialLogoUrl, avatarUrl: initialAv
           <Type className="h-4 w-4 text-blue-500" />
           Polices
         </h2>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {(['titre', 'texte'] as const).map((key) => (
             <div key={key}>
               <label className="block text-sm font-medium text-gray-700 mb-1 capitalize">
